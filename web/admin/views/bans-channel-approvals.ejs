@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Одобрение каналов (temp-mail) | Панель управления</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <div class="layout-container">
+    <%- include('partials/sidebar', { currentPath: '/bans/channel-approvals' }) %>
+    <main class="main-content">
+      <style>
+        .table-container {
+          background: rgba(255, 255, 255, 0.03);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          overflow: hidden;
+          margin-top: 20px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        th, td { padding: 12px 15px; text-align: left; border-bottom: 1px solid rgba(255, 255, 255, 0.05); word-break: break-word; }
+        th { font-weight: 600; color: #9ca3af; background: rgba(0,0,0,0.2); }
+        .btn-action { padding: 8px 12px; cursor: pointer; margin-right: 6px; }
+        .filters a { margin-right: 12px; color: #9ca3af; text-decoration: none; }
+        .filters a.active { color: #6fdeee; font-weight: 600; }
+        .status-pending { color: #e6a23c; }
+        .status-active { color: #39b54a; }
+        .status-rejected { color: #ff6b6b; }
+      </style>
+      <div class="content-header">
+        <h1>Одобрение каналов (временная почта)</h1>
+        <p style="color:#9ca3af;margin:8px 0 0;font-size:13px;">В очереди — сами каналы. Одобрение открывает канал зрителям и эфир.</p>
+      </div>
+      <div class="filters" style="margin-top: 12px;">
+        <a href="/bans/channel-approvals?status=pending" class="<%= statusFilter === 'pending' ? 'active' : '' %>">Ожидают</a>
+        <a href="/bans/channel-approvals?status=approved" class="<%= statusFilter === 'approved' ? 'active' : '' %>">Одобрены</a>
+        <a href="/bans/channel-approvals?status=rejected" class="<%= statusFilter === 'rejected' ? 'active' : '' %>">Отклонены</a>
+        <a href="/bans/channel-approvals?status=all" class="<%= statusFilter === 'all' ? 'active' : '' %>">Все</a>
+      </div>
+
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Канал</th>
+              <th>Shortname</th>
+              <th>Владелец</th>
+              <th>Email</th>
+              <th>IP</th>
+              <th>Статус</th>
+              <th>Создан</th>
+              <th>Действие</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% (channels || []).forEach(c => { %>
+              <tr>
+                <td><%= c.id %></td>
+                <td>
+                  <a href="/channels/<%= c.id %>/edit" style="color:#6fdeee;"><%= c.name %></a>
+                  <% if (c.is_personal) { %><span style="color:#888;font-size:11px;"> (личный)</span><% } %>
+                </td>
+                <td><a href="<%= typeof APP_URL !== 'undefined' ? APP_URL : '' %>/<%= c.shortname %>" target="_blank" style="color:#9ca3af;">/<%= c.shortname %></a></td>
+                <td><a href="/users/<%= c.owner_id %>/edit" style="color:#6fdeee;"><%= c.username %></a></td>
+                <td><%= c.email %><% if (c.email_is_disposable) { %> <span style="color:#e6a23c;">(temp)</span><% } %></td>
+                <td><%= c.last_ip || c.reg_ip || '—' %></td>
+                <td>
+                  <% if (c.status === 'pending_approval') { %>
+                    <span class="status-pending">ожидает</span>
+                  <% } else if (c.status === 'rejected_approval') { %>
+                    <span class="status-rejected">отклонён</span>
+                  <% } else { %>
+                    <span class="status-active">одобрен</span>
+                  <% } %>
+                </td>
+                <td><%= formatDate(c.created_at, userTimezone, 'DD.MM.YYYY HH:mm') %></td>
+                <td>
+                  <% if (c.status === 'pending_approval' || c.status === 'rejected_approval') { %>
+                    <form action="/bans/channel-approvals/<%= c.id %>/approve" method="POST" style="display:inline;">
+                      <button type="submit" class="btn-action" style="background:#39b54a;border:none;color:#fff;border-radius:4px;">Одобрить</button>
+                    </form>
+                  <% } %>
+                  <% if (c.status === 'pending_approval' || (c.status === 'active' && c.approved_at)) { %>
+                    <form action="/bans/channel-approvals/<%= c.id %>/reject" method="POST" style="display:inline;">
+                      <button type="submit" class="btn-action btn-danger">Отклонить</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+            <% if (!channels || channels.length === 0) { %>
+              <tr><td colspan="9" style="text-align:center;padding:30px;color:#888;">Каналов в этой очереди нет</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination" style="margin-top:16px;">
+        <% if (page > 1) { %>
+          <a href="/bans/channel-approvals?status=<%= statusFilter %>&page=<%= page - 1 %>&limit=<%= limit %>" class="page-link">Предыдущая</a>
+        <% } %>
+        <span style="margin:0 10px;">стр. <%= page %> / <%= totalPages || 1 %> (всего <%= total %>)</span>
+        <% if (page < totalPages) { %>
+          <a href="/bans/channel-approvals?status=<%= statusFilter %>&page=<%= page + 1 %>&limit=<%= limit %>" class="page-link">Следующая</a>
+        <% } %>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

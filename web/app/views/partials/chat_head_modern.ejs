@@ -1,0 +1,19 @@
+<%# Шапка колонки чата темы «Эфир». Канал и дашборд панели. %>
+<div class="ct-head">
+  <span class="ct-head__title">Чат</span>
+  <button type="button" class="ct-head__toggle" id="ct-users-toggle"
+    title="Показать или скрыть список зрителей" aria-label="Список зрителей">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 20.5v-1.8a3.7 3.7 0 0 0-3.7-3.7H6.2A3.7 3.7 0 0 0 2.5 18.7v1.8"/><circle cx="8.75" cy="7.5" r="3.7"/><path d="M21.5 20.5v-1.8a3.7 3.7 0 0 0-2.8-3.6"/><path d="M15.5 4a3.7 3.7 0 0 1 0 7"/></svg>
+  </button>
+</div>
+<script>
+  (function () {
+    var btn = document.getElementById('ct-users-toggle');
+    var body = document.getElementById('chat_body');
+    if (!btn || !body) return;
+    btn.addEventListener('click', function () {
+      var hidden = body.classList.toggle('ct-users-hidden');
+      btn.classList.toggle('is-off', hidden);
+    });
+  })();
+</script>

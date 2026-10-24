@@ -1,0 +1,1894 @@
+/* ==========================================================================
+   ЭтоЯTV — панель управления в современной теме
+   Подключается ПОВЕРХ panel.css: разметка и геометрия панели уже плоские
+   (flex, без float), поэтому здесь только перевод палитры на токены темы.
+
+   Переменные берутся из theme_tokens.css — он подключается перед этим файлом.
+   ========================================================================== */
+
+body.theme_modern {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+}
+
+.theme_modern .panel-container {
+  background-color: var(--bg);
+}
+
+.theme_modern a {
+  color: var(--accent);
+}
+
+.theme_modern a:hover {
+  color: var(--accent-hover);
+}
+
+/* --------------------------------------------------------------------------
+   Боковое меню
+   -------------------------------------------------------------------------- */
+
+.theme_modern .sidebar {
+  background-color: var(--surface);
+  border-right: 1px solid var(--border);
+}
+
+.theme_modern .sidebar-header,
+.theme_modern .sidebar-actions {
+  border-bottom: 1px solid var(--border);
+}
+
+.theme_modern .logo-box img:not(.logotype-img),
+.theme_modern .mobile-header img:not(.logotype-img),
+.theme_modern .studio-header img:not(.logotype-img) {
+  filter: var(--logo-filter);
+}
+
+.theme_modern .logo-box .logotype-img,
+.theme_modern .mobile-header .logotype-img,
+.theme_modern .studio-header .logotype-img {
+  width: 36px;
+  height: 36px;
+}
+
+.theme_modern .sidebar-header .logo-box {
+  justify-content: center;
+}
+
+.theme_modern .sidebar-header .logo-box a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme_modern .mobile-header .logotype-img {
+  width: 32px;
+  height: 32px;
+}
+
+.theme_modern .studio-header .logotype-img {
+  width: 28px;
+  height: 28px;
+}
+
+.theme_modern .logo-text {
+  background-color: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-sm);
+}
+
+.theme_modern .logo-desc {
+  color: var(--text-strong);
+}
+
+.theme_modern .user-info,
+.theme_modern .disk-text {
+  color: var(--muted);
+}
+
+.theme_modern .user-highlight,
+.theme_modern .channel-highlight {
+  color: var(--accent);
+}
+
+.theme_modern .progress-bar {
+  background-color: var(--bg);
+  border-radius: var(--radius-pill);
+}
+
+.theme_modern .progress {
+  background-color: var(--accent);
+  border-radius: var(--radius-pill);
+}
+
+/* В panel.css .icon — серый квадрат-заглушка («placeholder for actual icons»).
+   Рисуем настоящие иконки SVG-масками: цвет наследуется от пункта меню. */
+.theme_modern .icon {
+  width: 17px;
+  height: 17px;
+  margin-right: 10px;
+  background-color: currentColor;
+  border-radius: 0;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.theme_modern .icon-settings {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3.2'/%3E%3Cpath d='M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.06A1.7 1.7 0 0 0 8.9 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.06A1.7 1.7 0 0 0 4.7 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.06a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.06a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.06a1.7 1.7 0 0 0-1.54 1z'/%3E%3C/svg%3E");
+}
+
+.theme_modern .icon-media {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='2.5' y='4.5' width='19' height='15' rx='2.5'/%3E%3Cpath d='M2.5 9h19M2.5 15h19M8 4.5v15M16 4.5v15'/%3E%3C/svg%3E");
+}
+
+.theme_modern .icon-autopilot {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3.2 12h5.3M15.5 12h5.3M12 12l4.2-4.2'/%3E%3Ccircle cx='12' cy='12' r='2.4' fill='%23000' stroke='none'/%3E%3C/svg%3E");
+}
+
+.theme_modern .icon-announces {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 10.5v3a1.5 1.5 0 0 0 1.5 1.5H6l4.5 4V5L6 9H4.5A1.5 1.5 0 0 0 3 10.5z'/%3E%3Cpath d='M15 8.8a4.2 4.2 0 0 1 0 6.4'/%3E%3Cpath d='M18 5.8a8 8 0 0 1 0 12.4'/%3E%3C/svg%3E");
+}
+
+.theme_modern .icon-news {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 4.5h12a1.5 1.5 0 0 1 1.5 1.5v13H5.5A1.5 1.5 0 0 1 4 17.5z'/%3E%3Cpath d='M17.5 8.5H20a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5h-2.5'/%3E%3Cpath d='M7 8h7M7 11.5h7M7 15h4'/%3E%3C/svg%3E");
+}
+
+.theme_modern .icon-stat {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 20.5h17'/%3E%3Cpath d='M6.5 20.5v-7M11.5 20.5V6.5M16.5 20.5v-10'/%3E%3C/svg%3E");
+}
+
+/* Активный пункт подсвечивается акцентом вместе с иконкой */
+.theme_modern .sidebar-menu > li.active > a { color: var(--accent); }
+
+.theme_modern .sidebar-menu > li > a {
+  color: var(--text);
+  border-left: 3px solid transparent;
+}
+
+.theme_modern .sidebar-menu > li > a:hover {
+  background-color: var(--surface-2);
+  color: var(--text-strong);
+}
+
+.theme_modern .sidebar-menu > li.active > a {
+  background-color: var(--surface-3);
+  border-left-color: var(--accent);
+  color: var(--text-strong);
+}
+
+.theme_modern .submenu {
+  background-color: var(--surface-2);
+}
+
+.theme_modern .submenu li a {
+  color: var(--muted);
+}
+
+.theme_modern .submenu li a:hover,
+.theme_modern .submenu li.active a {
+  color: var(--text-strong);
+  background-color: var(--surface-3);
+}
+
+.theme_modern .sidebar-overlay {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.theme_modern .menu-toggle {
+  color: var(--text-strong);
+}
+
+/* --------------------------------------------------------------------------
+   Верхняя панель и содержимое
+   Светлый хром старой панели становится тёмным
+   -------------------------------------------------------------------------- */
+
+.theme_modern .top-nav {
+  background: var(--surface);
+  background-color: var(--surface);
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+}
+
+.theme_modern .top-nav a {
+  color: var(--text);
+}
+
+.theme_modern .top-nav a:hover {
+  color: var(--accent);
+}
+
+.theme_modern .card {
+  background-color: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.theme_modern .card-title {
+  color: var(--text-strong);
+  border-bottom: 1px solid var(--border);
+}
+
+.theme_modern .banner {
+  background: linear-gradient(to bottom, #3a3320, #2d2718);
+  color: #f5e6a8;
+  border: 1px solid #5c4f24;
+  border-radius: var(--radius-sm);
+}
+
+.theme_modern .banner a {
+  color: var(--accent);
+}
+
+/* --------------------------------------------------------------------------
+   Кнопки и формы
+   -------------------------------------------------------------------------- */
+
+.theme_modern .btn,
+.theme_modern .btn-action {
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.theme_modern .btn-action {
+  border-radius: var(--radius-sm);
+}
+
+.theme_modern .btn:hover,
+.theme_modern .btn-action:hover {
+  background: #2b3441;
+  border-color: #414b5a;
+  color: var(--text-strong);
+}
+
+.theme_modern .btn-blue {
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.theme_modern .btn-blue:hover {
+  background: var(--accent-hover);
+  border-color: var(--accent-hover);
+  color: var(--on-accent);
+}
+
+.theme_modern .form-control {
+  background-color: var(--bg);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+.theme_modern .form-control:focus {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+  outline: none;
+}
+
+.theme_modern select.form-control option {
+  background-color: var(--surface-2);
+  color: var(--text);
+}
+
+/* --------------------------------------------------------------------------
+   Таблицы
+   -------------------------------------------------------------------------- */
+
+.theme_modern table.panel-table th {
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+}
+
+.theme_modern table.panel-table td {
+  border-bottom: 1px solid var(--border);
+}
+
+.theme_modern table.panel-table tr:hover {
+  background-color: var(--surface-2);
+}
+
+/* --------------------------------------------------------------------------
+   Хлебные крошки: в разметке они заданы инлайновым светлым градиентом
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   Настройки канала (Телеканал / Трансляция / Дизайн / Модерация / Доступ / Команда)
+
+   Подписи и кнопки в шаблонах заданы инлайном: #8c989e, #00bfff/.btn-blue,
+   #ff4d4d. Все подразделы — один язык темы, без кислотного классического синего.
+   -------------------------------------------------------------------------- */
+
+.theme_modern .form-group label,
+.theme_modern label[style*="#8c989e"],
+.theme_modern label[style*="#8fa0ad"],
+.theme_modern span[style*="#8c989e"],
+.theme_modern .form-group [style*="color: #8c989e"],
+.theme_modern .form-group [style*="color:#8c989e"] {
+  color: var(--text) !important;
+}
+
+.theme_modern .content-wrapper [style*="font-size: 18px"][style*="color: #fff"],
+.theme_modern .content-wrapper [style*="font-size: 14px"][style*="color: #fff"][style*="font-weight: bold"] {
+  color: var(--text-strong) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+.theme_modern .user-info a[style*="#00a0e3"] {
+  color: var(--accent) !important;
+}
+
+.theme_modern .btn-blue,
+.theme_modern button.btn-blue,
+.theme_modern button.btn.btn-blue {
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--on-accent) !important;
+  font-weight: 650;
+}
+
+.theme_modern .btn-blue:hover,
+.theme_modern button.btn-blue:hover {
+  background: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  color: var(--on-accent) !important;
+}
+
+.theme_modern .btn[style*="#ff4d4d"],
+.theme_modern button.btn[style*="#ff4d4d"] {
+  background: rgba(255, 107, 107, 0.14) !important;
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+.theme_modern .btn[style*="#ff4d4d"]:hover,
+.theme_modern button.btn[style*="#ff4d4d"]:hover {
+  background: var(--danger) !important;
+  border-color: var(--danger) !important;
+  color: #2a0b0b !important;
+}
+
+.theme_modern .content-wrapper input[type="file"] {
+  color: var(--muted);
+}
+
+.theme_modern .content-wrapper input[type="file"]::file-selector-button {
+  margin-right: 12px;
+  padding: 7px 14px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  color: var(--text);
+  font: 550 13px var(--font);
+  cursor: pointer;
+}
+
+.theme_modern #container_swf {
+  border-bottom: 1px solid var(--border) !important;
+}
+
+/* ==========================================================================
+   Эфирная студия
+
+   Студия — отдельная страница со своим набором стилей внутри шаблона, поэтому
+   она приехала из старого оформления: серые панели с прямыми углами, синяя и
+   зелёная кнопки из bootstrap-времён. Здесь переводим её на язык темы, но
+   сохраняем смысл цветов: бирюза — действие, зелёный — начало эфира, красный —
+   эфир идёт и запись, оранжевый — подключение.
+
+   Селекторы с .theme_modern весомее собственных правил студии (один класс
+   против двух), поэтому !important почти нигде не нужен.
+   ========================================================================== */
+
+.theme_modern .studio-container {
+  background: var(--bg);
+  font-family: var(--font);
+}
+
+/* Верхняя полоса: как шапка сайта — стекло с подсветкой сверху */
+.theme_modern .studio-header {
+  background: var(--glass-2);
+  border-bottom: 1px solid var(--border);
+  box-shadow: var(--edge);
+  height: 52px;
+  padding: 8px 18px;
+}
+
+.theme_modern .studio-title-block { color: var(--muted); }
+.theme_modern .studio-title-block a { color: var(--accent); }
+.theme_modern .studio-header-right { color: var(--muted); }
+.theme_modern .studio-header-right span { color: var(--text); }
+
+.theme_modern .btn-exit {
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--danger);
+  font-weight: 600;
+  letter-spacing: .3px;
+}
+
+.theme_modern .btn-exit:hover {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #2a0b0b;
+}
+
+.theme_modern .studio-workspace {
+  background: var(--bg);
+  gap: var(--gap);
+  padding: var(--gap);
+}
+
+/* Панели-карточки */
+.theme_modern .studio-sidebar,
+.theme_modern .monitor-box,
+.theme_modern .studio-controls {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1), var(--edge);
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.theme_modern .studio-sidebar:hover,
+.theme_modern .monitor-box:hover,
+.theme_modern .studio-controls:hover {
+  border-color: var(--accent-line);
+  box-shadow: var(--shadow-2);
+}
+
+.theme_modern .sidebar-tabs,
+.theme_modern .control-tabs {
+  background: transparent;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Вкладки: подчёркивание вместо заливки — как на сайте */
+.theme_modern .sidebar-tab,
+.theme_modern .control-tab,
+.theme_modern .window-tab {
+  background: transparent;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  color: var(--muted);
+  font-weight: 600;
+  letter-spacing: .3px;
+}
+
+.theme_modern .sidebar-tab:hover,
+.theme_modern .control-tab:hover,
+.theme_modern .window-tab:hover {
+  background: rgba(255, 255, 255, .04);
+  color: var(--text);
+}
+
+.theme_modern .sidebar-tab.active,
+.theme_modern .control-tab.active,
+.theme_modern .window-tab.active {
+  background: transparent;
+  border-bottom-color: var(--accent);
+  color: var(--accent);
+}
+
+.theme_modern .window-tabs-bar { border-bottom-color: var(--border); }
+
+.theme_modern .btn-add-window {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+}
+
+.theme_modern .btn-add-window:hover {
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+.theme_modern .monitor-title {
+  border-bottom: 1px solid var(--border);
+  color: var(--muted-dim);
+}
+
+.theme_modern .monitor-canvas-container,
+.theme_modern .monitor-canvas,
+.theme_modern .local-video-preview {
+  border-radius: var(--radius-sm);
+}
+
+/* Подписи и поля */
+.theme_modern .source-label { color: var(--muted-dim); }
+
+.theme_modern .source-select,
+.theme_modern .ctrl-input,
+.theme_modern .ctrl-color {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+
+.theme_modern .source-select:focus,
+.theme_modern .ctrl-input:focus,
+.theme_modern .ctrl-color:focus {
+  border-color: var(--accent-line);
+  box-shadow: var(--ring);
+}
+
+.theme_modern .ctrl-input::placeholder { color: var(--muted-dim); }
+
+/* Записи медиа-архива */
+.theme_modern .archive-item {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.theme_modern .archive-item:hover {
+  background: var(--surface-3);
+  border-color: var(--accent-line);
+}
+
+.theme_modern .archive-item.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+}
+
+.theme_modern .archive-item-title { color: var(--text); }
+.theme_modern .archive-item-duration { color: var(--muted-dim); }
+
+/* Действия: бирюза — вывести в эфир, зелёный — начать вещание */
+.theme_modern .btn-live-transition,
+.theme_modern .btn-apply-overlay {
+  background: var(--accent);
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: #08131b;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+.theme_modern .btn-live-transition:hover,
+.theme_modern .btn-apply-overlay:hover {
+  background: var(--accent-hover);
+  color: #08131b;
+}
+
+.theme_modern .btn-start-broadcast {
+  background: var(--autopilot);
+  border: 0;
+  border-radius: var(--radius-sm);
+  color: #05230f;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+.theme_modern .btn-start-broadcast:hover { background: #3ad06d; }
+
+.theme_modern .btn-start-broadcast.streaming,
+.theme_modern .btn-start-broadcast.streaming:hover {
+  background: var(--live);
+  border: 0;
+  color: #2a0b0b;
+}
+
+.theme_modern .btn-start-broadcast.connecting {
+  background: var(--warning);
+  border: 0;
+  color: #2c1d00;
+}
+
+.theme_modern .btn-record-studio {
+  background: var(--surface-2);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--live);
+  font-weight: 700;
+}
+
+.theme_modern .btn-record-studio:hover {
+  background: var(--surface-3);
+  border-color: var(--live);
+}
+
+.theme_modern .btn-record-studio.recording,
+.theme_modern .btn-record-studio.recording:hover {
+  background: var(--live);
+  border-color: var(--live);
+  color: #2a0b0b;
+}
+
+.theme_modern .onair-status-bar { color: var(--muted); }
+.theme_modern .onair-status-indicator { background: var(--border-strong); }
+.theme_modern .onair-status-indicator.live { background: var(--live); }
+
+/*
+ * Кнопка предпросмотра оверлея: в разметке стоит эмодзи «глаз», а тема живёт
+ * на своём SVG-наборе. Глиф прячем размером шрифта, рисуем маской.
+ */
+.theme_modern .eye-toggle-btn {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-size: 0;
+}
+
+.theme_modern .eye-toggle-btn::after {
+  content: "";
+  width: 17px;
+  height: 17px;
+  background: currentColor;
+  -webkit-mask: var(--icon-eye) center / contain no-repeat;
+  mask: var(--icon-eye) center / contain no-repeat;
+}
+
+.theme_modern .eye-toggle-btn:hover { color: var(--text); }
+
+.theme_modern .eye-toggle-btn.active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* Предупреждение о бете */
+.theme_modern .studio-beta-warning {
+  background: rgba(251, 191, 36, .1) !important;
+  border: 1px solid rgba(251, 191, 36, .35) !important;
+  border-radius: var(--radius) !important;
+  color: var(--text) !important;
+}
+
+.theme_modern .studio-beta-warning b,
+.theme_modern .studio-beta-warning strong { color: var(--warning); }
+
+.theme_modern .applied-elements-list {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+}
+
+/*
+ * Кнопки «В эфир» и «Снять» под окнами оверлеев: цвета заданы инлайном, причём
+ * у отбивки «В эфир» красная, а у заставки и бегущей строки — обычная. Красный
+ * в теме означает «идёт эфир или запись», поэтому здесь он вводит в заблуждение.
+ * Приводим к одному виду: действие — бирюза, снятие — нейтральная поверхность.
+ */
+.theme_modern .btn-apply-overlay[style*="#c9302c"] {
+  background: var(--accent) !important;
+  color: #08131b !important;
+}
+
+.theme_modern .btn-apply-overlay[style*="#555"] {
+  background: var(--surface-3) !important;
+  color: var(--text) !important;
+}
+
+/* ==========================================================================
+   Панель: довести каркас до языка сайта
+
+   Шаблоны панели всё ещё несут css_0: светлые крошки, градиентные кнопки,
+   белые инпуты, таблицы без скругления, подписи #8c989e, эмодзи-лупа.
+   Менять разметку нельзя — классика живёт на тех же шаблонах. Перебиваем
+   инлайны здесь, тем же словарём, что и сайт: --glass, --accent, --gap.
+   ========================================================================== */
+
+.theme_modern a:hover { text-decoration: none; }
+
+.theme_modern .content-wrapper {
+  padding: var(--gap);
+}
+
+.theme_modern .dashboard-grid { gap: var(--gap); }
+
+.theme_modern .card {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-1), var(--edge);
+  padding: var(--pad);
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.theme_modern .card:hover {
+  border-color: var(--accent-line);
+  box-shadow: var(--shadow-2);
+}
+
+/* Плеер на дашборде лежит в «карточке» без фона — ховер ей не нужен */
+.theme_modern .card[style*="transparent"],
+.theme_modern .card[style*="border: none"] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+.theme_modern .card[style*="transparent"]:hover {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.theme_modern .card-title {
+  color: var(--text-strong);
+  font-weight: 650;
+  border-bottom-color: var(--border);
+}
+
+/* Крошки: светлый градиент 2008 года. Делаем тихую строку на границе,
+   как вторичный текст сайта, а не «серый веб 2.0»-плашку. */
+.theme_modern .content-wrapper > div[style*="linear-gradient(to bottom, #fff 0%, #e6e6e6 100%)"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  color: var(--muted) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--border) !important;
+  border-radius: 0 !important;
+  margin: 0 0 var(--gap) !important;
+  padding: 0 0 14px !important;
+  height: auto !important;
+  font: 550 13px/1.4 var(--font) !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+.theme_modern .content-wrapper > div[style*="linear-gradient(to bottom, #fff 0%, #e6e6e6 100%)"]:not(:has(form)):not(:has(input)) {
+  display: none !important;
+}
+
+.theme_modern .content-wrapper > div[style*="linear-gradient(to bottom, #fff 0%, #e6e6e6 100%)"] > div:first-child:not(:has(input)):not(:has(form)) {
+  display: none;
+}
+
+.theme_modern .content-wrapper > div[style*="linear-gradient(to bottom, #fff 0%, #e6e6e6 100%)"] a,
+.theme_modern .content-wrapper > div[style*="linear-gradient(to bottom, #fff 0%, #e6e6e6 100%)"] span {
+  color: var(--muted) !important;
+  text-decoration: none !important;
+  font-weight: 550 !important;
+}
+
+.theme_modern .content-wrapper > div[style*="linear-gradient(to bottom, #fff 0%, #e6e6e6 100%)"] span[style*="color: #333"] {
+  color: var(--text-strong) !important;
+}
+
+/* Поиск в крошках: белое поле и эмодзи-лупа. Поле — как на сайте,
+   лупа — SVG-маска, глиф прячем нулевым шрифтом. */
+.theme_modern .content-wrapper > div[style*="linear-gradient"] form:has(button.btn[style*="height: 26px"]) {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  vertical-align: middle;
+}
+
+.theme_modern .content-wrapper > div[style*="linear-gradient"] input[type="text"] {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text) !important;
+  box-sizing: border-box;
+  height: 36px !important;
+  min-height: 36px !important;
+  margin: 0;
+  padding: 0 12px !important;
+  font: 14px var(--font) !important;
+}
+
+.theme_modern .content-wrapper > div[style*="linear-gradient"] button.btn[style*="height: 26px"] {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px !important;
+  min-height: 36px !important;
+  margin: 0 !important;
+  margin-top: 0 !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+  background: var(--surface-3) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.theme_modern .content-wrapper > div[style*="linear-gradient"] button.btn[style*="height: 26px"]::after {
+  content: "";
+  display: block;
+  width: 16px;
+  height: 16px;
+  margin: 0 auto;
+  background: currentColor;
+  -webkit-mask: var(--icon-search) center / contain no-repeat;
+  mask: var(--icon-search) center / contain no-repeat;
+}
+
+/* Боковое меню: смена канала — только иконка ⇄ */
+.theme_modern .channel-switch {
+  --icon-swap: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 8h11l-2.5-2.5M17 16H6l2.5 2.5'/%3E%3C/svg%3E");
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  min-height: 28px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--accent);
+  font-size: 0;
+  line-height: 0;
+  text-decoration: none;
+  flex: 0 0 auto;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.theme_modern .channel-switch__icon {
+  display: block;
+  width: 15px;
+  height: 15px;
+  background: currentColor;
+  -webkit-mask: var(--icon-swap) center / contain no-repeat;
+  mask: var(--icon-swap) center / contain no-repeat;
+}
+
+.theme_modern .channel-switch:hover {
+  border-color: var(--accent-line);
+  background: var(--accent-dim);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.theme_modern .sidebar-menu > li > a,
+.theme_modern .submenu li a,
+.theme_modern .btn-action,
+.theme_modern .btn {
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.theme_modern .submenu {
+  animation: panelMenuIn var(--dur) var(--ease);
+}
+
+.theme_modern .progress-bar {
+  background-color: var(--bg);
+  border-radius: var(--radius-pill);
+  height: 4px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.theme_modern .progress {
+  background-color: var(--accent);
+  height: 100%;
+}
+
+.theme_modern .disk-text {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* Кнопки панели: без градиента .btn-blue и без квадратных 4px.
+   Сайдбар остаётся пилюлей, обычные — как кнопки сайта.
+   Инлайн display:inline-block + padding:5px при height:36px даёт 48px
+   (content-box) и текст сверху — перебиваем как у .btn-save. */
+.theme_modern .btn,
+.theme_modern a.btn,
+.theme_modern a.btn-blue {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  height: 36px;
+  padding: 0 16px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1;
+  vertical-align: middle;
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+  font: 550 13px/1 var(--font);
+  text-decoration: none;
+  box-shadow: none;
+  cursor: pointer;
+}
+
+.theme_modern a.btn:hover,
+.theme_modern .btn:hover {
+  background: var(--border-strong);
+  color: var(--text-strong);
+  text-decoration: none;
+}
+
+.theme_modern .sidebar-actions .btn-action {
+  background: var(--surface-3);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
+  box-shadow: none;
+}
+
+.theme_modern .sidebar-actions .btn-action:hover {
+  background: var(--surface-2);
+  border-color: var(--accent-line);
+  color: var(--text-strong);
+}
+
+/* Акцент внутри форм: «Сохранить / Создать», не любая submit
+   (у «Удалить» тоже type=submit и класс .btn). */
+.theme_modern form .btn-action,
+.theme_modern .btn-blue {
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--on-accent) !important;
+  font-weight: 650;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: none !important;
+}
+
+.theme_modern form .btn-action:hover,
+.theme_modern .btn-blue:hover {
+  background: var(--accent-hover) !important;
+  border-color: var(--accent-hover) !important;
+  color: var(--on-accent) !important;
+}
+
+.theme_modern .btn[style*="#ff4d4d"],
+.theme_modern button.btn[style*="#ff4d4d"],
+.theme_modern .btn[style*="background: #ff4d4d"],
+.theme_modern button[style*="#c0392b"] {
+  background: rgba(255, 107, 107, 0.14) !important;
+  border-color: var(--danger) !important;
+  color: var(--danger) !important;
+}
+
+.theme_modern .btn[style*="#ff4d4d"]:hover,
+.theme_modern button.btn[style*="#ff4d4d"]:hover {
+  background: var(--danger) !important;
+  color: #2a0b0b !important;
+}
+
+.theme_modern .content-wrapper button[style*="#3b9cd9"],
+.theme_modern .content-wrapper .btn-action[style*="#3b9cd9"],
+.theme_modern .content-wrapper button[style*="background: #3b9cd9"] {
+  background: var(--accent) !important;
+  border: 1px solid var(--accent) !important;
+  color: var(--on-accent) !important;
+  border-radius: var(--radius-sm) !important;
+  font-weight: 650;
+  box-shadow: none !important;
+}
+
+.theme_modern .content-wrapper button[style*="#4a5359"] {
+  background: var(--surface-3) !important;
+  border: 1px solid var(--border-strong) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+/* Поля: белый фон и #ccc / #1c2125 / #222 — следы css_0 */
+.theme_modern .form-control,
+.theme_modern .content-wrapper input[type="text"],
+.theme_modern .content-wrapper input[type="password"],
+.theme_modern .content-wrapper input[type="datetime-local"],
+.theme_modern .content-wrapper textarea,
+.theme_modern .content-wrapper select {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+  color: var(--text) !important;
+  font: 14px var(--font) !important;
+  min-height: 40px;
+  padding: 8px 12px !important;
+  box-shadow: none !important;
+  outline: none;
+  transition: border-color var(--dur-fast) var(--ease), box-shadow var(--dur-fast) var(--ease);
+}
+
+.theme_modern .form-control:focus,
+.theme_modern .content-wrapper input:focus,
+.theme_modern .content-wrapper textarea:focus,
+.theme_modern .content-wrapper select:focus {
+  border-color: var(--accent-line) !important;
+  box-shadow: var(--ring) !important;
+}
+
+.theme_modern .content-wrapper input::placeholder,
+.theme_modern .content-wrapper textarea::placeholder {
+  color: var(--muted-dim);
+}
+
+.theme_modern .form-group label,
+.theme_modern .content-wrapper label {
+  color: var(--text) !important;
+  font-size: 13px;
+}
+
+/* Строки label | control: лейбл «Название» короче «Анонс» / textarea
+   в обёртке, из‑за min-width:auto и width:100% у input получается лесенка. */
+.theme_modern .form-group[style*="display: flex"] {
+  display: grid !important;
+  grid-template-columns: 10.5rem minmax(0, 1fr);
+  align-items: start;
+  column-gap: 12px;
+}
+
+.theme_modern .form-group[style*="align-items: center"] {
+  align-items: center;
+}
+
+.theme_modern .form-group[style*="display: flex"] > label,
+.theme_modern .form-group[style*="display: flex"] > span[style*="width: 150px"],
+.theme_modern .form-group[style*="display: flex"] > div[style*="width: 150px"] {
+  width: auto !important;
+  min-width: 0;
+  margin-bottom: 0;
+  box-sizing: border-box;
+}
+
+.theme_modern .form-group[style*="display: flex"] > .form-control,
+.theme_modern .form-group[style*="display: flex"] > div[style*="flex-grow"] {
+  min-width: 0;
+  max-width: 600px;
+}
+
+/* Кнопки в строках формы не растягивать на всю колонку grid (Сохранить /
+   Заблокировать и т.п. становились «гигантскими»). */
+.theme_modern .form-group[style*="display: flex"] > button,
+.theme_modern .form-group[style*="display: flex"] > .btn,
+.theme_modern .form-group[style*="display: flex"] > .btn-blue,
+.theme_modern .form-group[style*="display: flex"] > .btn-action,
+.theme_modern .form-group[style*="display: flex"] > a.btn {
+  width: auto !important;
+  max-width: max-content;
+  justify-self: start;
+  flex: 0 0 auto;
+}
+
+/* Несколько кнопок подряд (дизайн: Сохранить + Сбросить): не ломать в grid. */
+.theme_modern .form-group[style*="display: flex"]:has(> .btn ~ .btn),
+.theme_modern .form-group[style*="display: flex"]:has(> button ~ button) {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.theme_modern .form-group[style*="display: flex"]:has(> .btn ~ .btn) > div[style*="width:"],
+.theme_modern .form-group[style*="display: flex"]:has(> button ~ button) > div[style*="width:"] {
+  width: 10.5rem !important;
+  flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+  .theme_modern .form-group[style*="display: flex"] {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Подписи #8c989e / #8fa0ad / #aaa / #c0c0b2 / #888 */
+.theme_modern .content-wrapper [style*="#8c989e"],
+.theme_modern .content-wrapper [style*="#8fa0ad"],
+.theme_modern .content-wrapper [style*="color: #aaa"],
+.theme_modern .content-wrapper [style*="color:#aaa"],
+.theme_modern .content-wrapper [style*="color: #888"],
+.theme_modern .content-wrapper [style*="color: #c0c0b2"] {
+  color: var(--muted) !important;
+}
+
+.theme_modern .content-wrapper [style*="color: #fff"] {
+  color: var(--text-strong) !important;
+}
+
+.theme_modern .content-wrapper [style*="color: #6fdeee"],
+.theme_modern .content-wrapper [style*="color: #6FDEEE"],
+.theme_modern .content-wrapper [style*="color: #00a0e3"] {
+  color: var(--accent) !important;
+}
+
+.theme_modern .content-wrapper [style*="color: #ff4444"],
+.theme_modern .content-wrapper [style*="color: #ff4d4d"],
+.theme_modern .content-wrapper [style*="color:#ff6b6b"] {
+  color: var(--danger) !important;
+}
+
+.theme_modern .content-wrapper [style*="color: #ffaa00"] {
+  color: var(--warning) !important;
+}
+
+/* Карточки-заливки #343b40 / #3a4247 / #252b30 / #2b3135 */
+.theme_modern .content-wrapper [style*="background-color: #343b40"],
+.theme_modern .content-wrapper [style*="background: #343b40"],
+.theme_modern .content-wrapper [style*="background-color: #3a4247"],
+.theme_modern .content-wrapper [style*="background: #3a4247"],
+.theme_modern .content-wrapper [style*="background: #252b30"],
+.theme_modern .content-wrapper [style*="background: #2b3135"],
+.theme_modern .content-wrapper [style*="background-color: #3a4247"] {
+  background: var(--glass) !important;
+  border-color: var(--border) !important;
+  border-radius: var(--radius) !important;
+  box-shadow: var(--shadow-1), var(--edge);
+}
+
+/* Справка в правом столбце: курсив 11px — «серый веб 2.0». Заголовок
+   как --text-strong, текст как --muted, без наклона. */
+.theme_modern .content-wrapper [style*="font-style: italic"] {
+  font-style: normal !important;
+  color: var(--text-strong) !important;
+  font-weight: 650 !important;
+}
+
+/* Алерты: bootstrap-зелень/розовый и жёлтый ⚠️ */
+.theme_modern .panel-alert {
+  padding: 12px 16px;
+  margin-bottom: var(--gap);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+}
+
+.theme_modern .panel-alert--ok {
+  background: rgba(74, 222, 128, 0.12);
+  border: 1px solid rgba(74, 222, 128, 0.35);
+  color: var(--success);
+}
+
+.theme_modern .panel-alert--err {
+  background: rgba(255, 107, 107, 0.12);
+  border: 1px solid rgba(255, 107, 107, 0.35);
+  color: var(--danger);
+}
+
+.theme_modern .panel-alert--ban {
+  background: rgba(255, 77, 90, 0.14);
+  border: 1px solid var(--live);
+  color: var(--text-strong);
+  font-weight: 650;
+  text-align: center;
+}
+
+.theme_modern .content-wrapper [style*="#dff0d8"],
+.theme_modern .content-wrapper [style*="#d4edda"] {
+  background: rgba(74, 222, 128, 0.12) !important;
+  border: 1px solid rgba(74, 222, 128, 0.35) !important;
+  color: var(--success) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.theme_modern .content-wrapper [style*="#f8d7da"],
+.theme_modern .content-wrapper [style*="#ffcccc"] {
+  background: rgba(255, 107, 107, 0.12) !important;
+  border: 1px solid rgba(255, 107, 107, 0.35) !important;
+  color: var(--danger) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.theme_modern .content-wrapper [style*="#5a1a1a"] {
+  background: rgba(255, 77, 90, 0.14) !important;
+  border-color: var(--live) !important;
+  color: var(--text-strong) !important;
+  border-radius: var(--radius) !important;
+}
+
+/* Таблицы: скругление и поверхность, а не голая сетка */
+.theme_modern table.panel-table {
+  width: 100%;
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  border-collapse: separate;
+  border-spacing: 0;
+  overflow: hidden;
+  box-shadow: var(--shadow-1), var(--edge);
+  font-size: 13px;
+}
+
+.theme_modern table.panel-table th {
+  color: var(--muted);
+  font-weight: 650;
+  font-size: 11px;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 14px;
+}
+
+.theme_modern table.panel-table td {
+  border-bottom: 1px solid var(--border);
+  padding: 12px 14px;
+  color: var(--text);
+}
+
+.theme_modern table.panel-table tr:last-child td { border-bottom: 0; }
+
+.theme_modern table.panel-table tr {
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.theme_modern table.panel-table tr:hover {
+  background: var(--surface-2);
+}
+
+.theme_modern table.panel-table a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+/* Записи и альбомы: карточка поднимается, тень из токенов */
+.theme_modern .content-wrapper [style*="background-color: #343b40"][style*="padding: 15px"] {
+  transition:
+    transform var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.theme_modern .content-wrapper [style*="background-color: #343b40"][style*="padding: 15px"]:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-2);
+  border-color: var(--accent-line) !important;
+}
+
+.theme_modern .channel-logo img {
+  background: var(--surface-2) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-sm) !important;
+}
+
+.theme_modern .channel-details {
+  color: var(--text);
+  font-size: 13px !important;
+}
+
+/* Автокомплит пользователей: белый список на тёмной форме */
+.theme_modern #ban-users-list,
+.theme_modern #team-users-list,
+.theme_modern #add-user-list {
+  background: var(--surface) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-2) !important;
+  animation: panelMenuIn var(--dur) var(--ease);
+}
+
+.theme_modern #ban-users-list > div,
+.theme_modern #team-users-list > div,
+.theme_modern #add-user-list > div {
+  color: var(--text) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+.theme_modern #ban-users-list > div:hover,
+.theme_modern #team-users-list > div:hover,
+.theme_modern #add-user-list > div:hover {
+  background: var(--surface-2) !important;
+}
+
+/* Модалка подтверждения */
+.theme_modern #yatv-confirm-modal-overlay > div {
+  background: var(--surface) !important;
+  border: 1px solid var(--border-strong) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-2) !important;
+  font-family: var(--font) !important;
+  animation: panelMenuIn var(--dur) var(--ease);
+}
+
+.theme_modern #yatv-confirm-modal-overlay > div > div:first-child {
+  background: var(--surface-2) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+.theme_modern #yatv-confirm-cancel-btn {
+  background: var(--surface-3) !important;
+  border: 1px solid var(--border-strong) !important;
+  color: var(--text) !important;
+  border-radius: var(--radius-sm) !important;
+  height: 36px;
+  font: 550 13px var(--font) !important;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.theme_modern #yatv-confirm-submit-btn {
+  background: var(--danger) !important;
+  border: 0 !important;
+  color: #2a0b0b !important;
+  border-radius: var(--radius-sm) !important;
+  height: 36px;
+  font: 650 13px var(--font) !important;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+/* Заголовки секций настроек */
+.theme_modern .content-wrapper [style*="font-size: 18px"] {
+  color: var(--text-strong) !important;
+  font-weight: 650;
+  border-bottom-color: var(--border) !important;
+}
+
+/* Вкладки студии: черта, не заливка. Движение — только цвет и border. */
+.theme_modern .sidebar-tab,
+.theme_modern .control-tab,
+.theme_modern .window-tab {
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+
+.theme_modern .archive-item,
+.theme_modern .btn-exit,
+.theme_modern .btn-live-transition,
+.theme_modern .btn-apply-overlay,
+.theme_modern .btn-start-broadcast,
+.theme_modern .btn-record-studio,
+.theme_modern .btn-add-window,
+.theme_modern .eye-toggle-btn {
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+@keyframes panelMenuIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Тот же язык, что theme_modern: студия не подключает theme_modern.css */
+@keyframes modernRise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Modern-ветка разметки панели: сайдбар, шапка страницы, дашборд
+   -------------------------------------------------------------------------- */
+
+.theme_modern .content-wrapper {
+  padding: 16px 24px 32px;
+}
+
+.theme_modern .sidebar-menu > li > a {
+  display: flex;
+  align-items: center;
+}
+
+.theme_modern .sidebar-who {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.theme_modern .sidebar-who__line {
+  display: grid;
+  grid-template-columns: 5.75rem minmax(0, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  row-gap: 6px;
+}
+
+.theme_modern .sidebar-who__line--channel {
+  align-items: center;
+}
+
+.theme_modern .sidebar-who__channel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.theme_modern .sidebar-who__channel .channel-highlight {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.theme_modern .sidebar-who__label {
+  color: var(--muted-dim);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+
+.theme_modern .sidebar-who__nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.theme_modern .sidebar-who__nav .scheme-toggle {
+  margin: 0;
+}
+
+.theme_modern .sidebar-who__nav .sidebar-home {
+  --icon-home: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.1' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 11.2L12 4.5l8 6.7'/%3E%3Cpath d='M7 10.5V19h10v-8.5'/%3E%3C/svg%3E");
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-left: auto;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--muted);
+  text-decoration: none;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.theme_modern .sidebar-who__nav .sidebar-home__icon {
+  display: block;
+  width: 18px;
+  height: 18px;
+  background: currentColor;
+  -webkit-mask: var(--icon-home) center / contain no-repeat;
+  mask: var(--icon-home) center / contain no-repeat;
+}
+
+.theme_modern .sidebar-who__nav .sidebar-home:hover {
+  border-color: var(--accent-line);
+  background: var(--accent-dim);
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.theme_modern .sidebar-actions {
+  padding-top: 14px;
+}
+
+.theme_modern .panel-compact-action {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  max-width: 100%;
+  min-width: 112px;
+  flex: 0 0 auto;
+  justify-self: start;
+  padding-inline: 18px !important;
+}
+
+/* В контенте .btn-action из panel.css — width:100% (сайдбар ок).
+   Формы/карточки: компактные кнопки по содержимому. */
+.theme_modern .content-wrapper .btn-action,
+.theme_modern .content-wrapper form .btn-action,
+.theme_modern .content-wrapper .card .btn-action,
+.theme_modern #announce-form .btn-action {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: auto !important;
+  max-width: 100%;
+  min-width: 112px;
+  flex: 0 0 auto;
+  padding-inline: 18px !important;
+  box-sizing: border-box;
+}
+
+.theme_modern #announce-form {
+  max-width: 640px;
+  box-sizing: border-box;
+}
+
+.theme_modern #announce-form input[type="text"],
+.theme_modern #announce-form textarea {
+  box-sizing: border-box;
+  max-width: 100%;
+}
+
+.theme_modern #announce-form input[type="datetime-local"] {
+  width: auto;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.theme_modern .panel-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  height: 40px;
+  margin-bottom: 8px;
+  padding: 0 14px;
+  box-sizing: border-box;
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  color: var(--accent);
+  font: 650 13px/1 var(--font);
+  text-decoration: none;
+  box-shadow: none;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.theme_modern .panel-chip:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--on-accent);
+  text-decoration: none;
+}
+
+.theme_modern .panel-chip__icon {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  -webkit-mask: var(--icon) center / contain no-repeat;
+  mask: var(--icon) center / contain no-repeat;
+}
+
+.theme_modern .panel-chip__icon--live {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 10l5-3v10l-5-3'/%3E%3Crect x='3' y='6' width='12' height='12' rx='2'/%3E%3C/svg%3E");
+}
+
+.theme_modern .panel-chip__icon--studio {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='3'/%3E%3Cpath d='M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 1.6V21a2 2 0 1 1-4 0v-.1A1.7 1.7 0 0 0 8.9 19.4a1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.6-1H3a2 2 0 1 1 0-4h.1A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-1.6V3a2 2 0 1 1 4 0v.1A1.7 1.7 0 0 0 15 4.6a1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 19.4 9a1.7 1.7 0 0 0 1.6 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z'/%3E%3C/svg%3E");
+}
+
+.theme_modern .panel-chip__icon--upload {
+  --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V6'/%3E%3Cpath d='M8 10l4-4 4 4'/%3E%3Cpath d='M4 18h16'/%3E%3C/svg%3E");
+}
+
+.theme_modern .panel-pagehead {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  margin: 0 0 20px;
+  padding: 0 0 16px;
+  border-bottom: 1px solid var(--border);
+  font: 650 14px/1.4 var(--font);
+  color: var(--text-strong);
+}
+
+.theme_modern .panel-pagehead a {
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.theme_modern .panel-pagehead a:hover { color: var(--accent); }
+
+.theme_modern .panel-channel__row {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.theme_modern .panel-channel__logo {
+  flex: 0 0 auto;
+  display: block;
+  width: 112px;
+  height: 68px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.theme_modern .panel-channel__logo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: var(--surface-2) !important;
+  border: 0 !important;
+}
+
+.theme_modern .panel-channel__name {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: var(--text-strong);
+  font-size: 18px;
+  font-weight: 650;
+  text-decoration: none;
+}
+
+.theme_modern .panel-channel__name:hover { color: var(--accent); }
+
+.theme_modern .panel-channel__facts {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+}
+
+.theme_modern .panel-channel__facts > div {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.theme_modern .panel-channel__facts dt {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.theme_modern .panel-channel__facts dd {
+  margin: 0;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.theme_modern .panel-channel__live {
+  color: var(--live);
+  font-weight: 700;
+}
+
+.theme_modern .panel-stage {
+  margin-top: var(--gap);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: #000;
+  box-shadow: var(--shadow-1), var(--edge);
+}
+
+.theme_modern .panel-embed-card,
+.theme_modern .panel-chart {
+  margin-top: var(--gap);
+}
+
+.theme_modern .panel-embed-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.theme_modern .panel-embed-block {
+  flex: 1;
+  min-width: 250px;
+}
+
+.theme_modern .panel-embed-block__label {
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .3px;
+  text-transform: uppercase;
+}
+
+.theme_modern .panel-embed {
+  margin: 0;
+  padding: 12px 14px;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-deep);
+  color: var(--text);
+  font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-all;
+  cursor: pointer;
+}
+
+.theme_modern .panel-embed:hover { border-color: var(--accent-line); }
+
+.theme_modern .panel-chart .card-title a {
+  margin-left: 8px;
+  font-size: 12px;
+  font-weight: 550;
+}
+
+.theme_modern .panel-chart__canvas {
+  height: 160px;
+  margin-top: 8px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.theme_modern .panel-chart__canvas canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.theme_modern #yatv-clear-chat-modal-overlay > div {
+  background: var(--surface);
+  width: 400px;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-2);
+  color: var(--text);
+  font-family: var(--font);
+}
+
+.theme_modern #yatv-clear-chat-modal-overlay > div > div:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-weight: 650;
+}
+
+.theme_modern #yatv-clear-chat-modal-overlay > div > div:last-child {
+  padding: 16px;
+}
+
+.theme_modern .panel-stage [style*="color: #fff"],
+.theme_modern .panel-stage [style*="color:#fff"] {
+  color: #fff !important;
+}
+
+/* --------------------------------------------------------------------------
+   Появление дашборда и студии
+
+   Карточки въезжают fade+translateY. Плеер .pl-* и чат не анимируем —
+   только оболочка .panel-stage. Stagger короткий, без pulse.
+   -------------------------------------------------------------------------- */
+
+.theme_modern .dashboard-grid > .card {
+  animation: modernRise var(--dur-slow) var(--ease) both;
+}
+
+.theme_modern .panel-stage {
+  animation: modernRise var(--dur) var(--ease) both;
+  animation-delay: 40ms;
+}
+
+.theme_modern .panel-embed-card {
+  animation: modernRise var(--dur-slow) var(--ease) both;
+  animation-delay: 80ms;
+}
+
+.theme_modern .panel-chart {
+  animation: modernRise var(--dur-slow) var(--ease) both;
+  animation-delay: 120ms;
+}
+
+.theme_modern .studio-sidebar {
+  animation: modernRise var(--dur-slow) var(--ease) both;
+}
+
+.theme_modern .monitors-row > .monitor-box:nth-child(1) {
+  animation: modernRise var(--dur-slow) var(--ease) both;
+  animation-delay: 40ms;
+}
+
+.theme_modern .monitors-row > .monitor-box:nth-child(2) {
+  animation: modernRise var(--dur-slow) var(--ease) both;
+  animation-delay: 80ms;
+}
+
+.theme_modern .studio-controls {
+  animation: modernRise var(--dur-slow) var(--ease) both;
+  animation-delay: 120ms;
+}
+
+/* Вкладка «Чат»: без padding у .control-content — иначе вокруг iframe воздух */
+.theme_modern .control-content:has(#panel-chat.active) {
+  padding: 0;
+}
+.theme_modern #panel-chat {
+  min-height: 380px;
+  height: 420px;
+}
+.theme_modern #panel-chat iframe {
+  min-height: 380px;
+  height: 420px;
+}
+
+.theme_modern .archive-list > .archive-item {
+  animation: modernRise var(--dur) var(--ease) both;
+}
+
+@supports (animation-delay: calc(sibling-index() * 1ms)) {
+  .theme_modern .archive-list > .archive-item:nth-child(-n+12) {
+    animation-delay: calc(min(sibling-index() - 1, 11) * 40ms);
+  }
+
+  .theme_modern .archive-list > .archive-item:nth-child(n+13) {
+    animation: none;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Постраничная навигация архива (записи / альбомы)
+   Тот же язык chip + muted «Страница X из Y», что на сайте в .pagination
+   -------------------------------------------------------------------------- */
+
+.theme_modern .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 20px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.theme_modern .pagination > a,
+.theme_modern .pagination > a.btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-width: 36px;
+  height: 36px;
+  margin: 0 !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text) !important;
+  font: 550 13px/1 var(--font);
+  text-decoration: none !important;
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.theme_modern .pagination > a:hover,
+.theme_modern .pagination > a.btn:hover {
+  background: var(--surface-3);
+  border-color: var(--border-strong);
+  color: var(--text-strong) !important;
+  text-decoration: none !important;
+}
+
+.theme_modern .pagination > span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 36px;
+  margin: 0 !important;
+  padding: 0 12px;
+  border-radius: var(--radius-pill);
+  background: var(--accent-dim);
+  color: var(--muted) !important;
+  font: 500 13px/1 var(--font);
+  white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme_modern *,
+  .theme_modern *::before,
+  .theme_modern *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}

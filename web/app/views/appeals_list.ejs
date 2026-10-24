@@ -1,0 +1,45 @@
+<%- include('partials/header') %>
+
+<div id="content">
+<div class="left_blocks" style="width: 720px; margin: 20px auto; float: none;">
+<div class="blackbox" style="width: auto;">
+<div class="blackbox_tl"></div><div class="blackbox_tc"></div><div class="blackbox_tr"></div>
+<div class="blackbox_cw"><div class="blackbox_c"><div class="blackbox_ci">
+<div class="block-head-bg"></div>
+<div class="block-head"><div class="block-head-right"><div class="block-title">Мои обжалования</div></div></div>
+<div class="block-content" style="padding: 20px;">
+  <% if (error) { %><div style="color:#ff6666;margin-bottom:12px;"><%= error %></div><% } %>
+  <% if (success) { %><div style="color:#6fdeee;margin-bottom:12px;"><%= success %></div><% } %>
+  <div style="margin-bottom:16px;">
+    <a href="/appeals/new" style="display:inline-block;background:#3b9cd9;color:#fff;text-decoration:none;padding:8px 16px;border-radius:3px;font-weight:bold;">Новое обжалование</a>
+  </div>
+  <% if (!tickets.length) { %>
+    <p style="color:#888;">У вас пока нет тикетов обжалования.</p>
+  <% } else { %>
+    <table style="width:100%; border-collapse:collapse; font-size:13px; color:#ddd;">
+      <thead>
+        <tr style="color:#9ca3af; text-align:left;">
+          <th style="padding:8px; border-bottom:1px solid #333;">№</th>
+          <th style="padding:8px; border-bottom:1px solid #333;">Предмет</th>
+          <th style="padding:8px; border-bottom:1px solid #333;">Статус</th>
+          <th style="padding:8px; border-bottom:1px solid #333;">Обновлён</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% tickets.forEach(function(t) { %>
+          <tr>
+            <td style="padding:10px 8px; border-bottom:1px solid #2a2a2a;"><a href="/appeals/<%= t.id %>" style="color:#6fdeee;">#<%= t.id %></a></td>
+            <td style="padding:10px 8px; border-bottom:1px solid #2a2a2a;"><%= t.subject_title || t.subject_label %></td>
+            <td style="padding:10px 8px; border-bottom:1px solid #2a2a2a;"><%= t.status_label %></td>
+            <td style="padding:10px 8px; border-bottom:1px solid #2a2a2a;"><%= formatDate(t.updated_at, userTimezone, 'DD.MM.YYYY HH:mm') %></td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+</div><div class="clear_both"></div></div></div>
+<div class="blackbox_bl"></div><div class="blackbox_bc"></div><div class="blackbox_br"></div>
+</div></div>
+<div class="clear_both"></div></div>
+<%- include('partials/footer') %>

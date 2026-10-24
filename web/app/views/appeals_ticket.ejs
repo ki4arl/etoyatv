@@ -1,0 +1,95 @@
+<%- include('partials/header') %>
+
+<div id="content">
+<div class="left_blocks" style="width: 720px; margin: 20px auto; float: none;">
+<div class="blackbox" style="width: auto;">
+<div class="blackbox_tl"></div><div class="blackbox_tc"></div><div class="blackbox_tr"></div>
+<div class="blackbox_cw"><div class="blackbox_c"><div class="blackbox_ci">
+<div class="block-head-bg"></div>
+<div class="block-head"><div class="block-head-right"><div class="block-title">Обжалование №<%= ticket.id %></div></div></div>
+<div class="block-content" style="padding: 20px;">
+
+  <% if (error) { %><div style="color:#ff6666;margin-bottom:10px;"><%= error %></div><% } %>
+  <% if (info) { %><div style="color:#e6a23c;margin-bottom:10px;"><%= info %></div><% } %>
+
+  <% var outcome = ticket.outcome; %>
+  <% if (outcome) { %>
+    <div style="margin-bottom:14px; padding:12px 14px; border-radius:6px; font-size:13px; line-height:1.45;
+      <% if (outcome.tone === 'ok') { %>background:#1a2a1c; border:1px solid #3a7a45; color:#b6e0bc;
+      <% } else if (outcome.tone === 'bad') { %>background:#2a1a1a; border:1px solid #8a4040; color:#f0c0c0;
+      <% } else if (outcome.tone === 'wait') { %>background:#1a2430; border:1px solid #3b6a8a; color:#c5d8e8;
+      <% } else { %>background:#222; border:1px solid #444; color:#bbb;<% } %>">
+      <strong style="display:block; margin-bottom:4px; font-size:14px;"><%= outcome.title %></strong>
+      <% if (outcome.text) { %><span><%= outcome.text %></span><% } %>
+      <% if (ticket.verdict_note && !ticket.open) { %>
+        <div style="margin-top:8px; opacity:0.95;">Формулировка решения: <%= ticket.verdict_note %></div>
+      <% } %>
+    </div>
+  <% } %>
+
+  <div style="background:#1c1c1c; border:1px solid #333; border-radius:6px; padding:14px 16px; margin-bottom:16px;">
+    <div style="font-size:12px; color:#888; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">О чём тикет</div>
+    <% if (ticket.facts && ticket.facts.length) { %>
+      <div style="font-size:13px; line-height:1.45;">
+        <% ticket.facts.forEach(function(f) { %>
+          <div style="margin-bottom:10px;">
+            <div style="color:#888; font-size:12px; margin-bottom:2px;"><%= f.label %></div>
+            <% if (f.href) { %>
+              <a href="<%= f.href %>" style="color:#6fdeee; text-decoration:none; font-weight:bold;"><%= f.value %></a>
+            <% } else { %>
+              <div style="color:#e8e8e8;"><%= f.value %></div>
+            <% } %>
+          </div>
+        <% }); %>
+      </div>
+    <% } else { %>
+      <p style="margin:0; color:#ddd; font-size:13px;"><%= ticket.subject_title || ticket.subject_label %></p>
+    <% } %>
+    <div style="margin-top:10px; padding-top:10px; border-top:1px solid #2a2a2a; font-size:12px; color:#777; display:flex; flex-wrap:wrap; gap:12px;">
+      <span>Создан: <%= formatDate(ticket.created_at, userTimezone, 'DD.MM.YYYY HH:mm') %></span>
+      <% if (ticket.resolved_at) { %>
+        <span>Решён: <%= formatDate(ticket.resolved_at, userTimezone, 'DD.MM.YYYY HH:mm') %></span>
+      <% } else { %>
+        <span>Обновлён: <%= formatDate(ticket.updated_at, userTimezone, 'DD.MM.YYYY HH:mm') %></span>
+      <% } %>
+    </div>
+  </div>
+
+  <div style="font-size:12px; color:#888; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em;">Переписка</div>
+  <p style="color:#666; font-size:12px; margin:0 0 12px;">Вы — истец. Сотрудники отвечают без личных имён: сначала ответчик (модерация), итог выносит судья (администрация).</p>
+
+  <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:18px;">
+    <% if (!messages.length) { %>
+      <div style="color:#888; font-size:13px;">Пока нет сообщений.</div>
+    <% } %>
+    <% messages.forEach(function(m) { %>
+      <div style="background:#1c1c1c; border:1px solid #333; border-radius:6px; padding:12px 14px;
+        <% if (m.author_side === 'judge') { %>border-color:#6a5a30;<% } %>
+        <% if (m.author_side === 'system') { %>opacity:0.75;<% } %>">
+        <div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px; font-size:12px;">
+          <strong style="color:<%= m.author_side === 'user' ? '#6fdeee' : (m.author_side === 'judge' ? '#e6a23c' : (m.author_side === 'respondent' ? '#9ecbff' : '#888')) %>;"><%= m.display_name %></strong>
+          <span style="color:#666;"><%= formatDate(m.created_at, userTimezone, 'DD.MM.YYYY HH:mm') %></span>
+        </div>
+        <div style="color:#ddd; font-size:13px; white-space:pre-wrap; word-break:break-word;"><%= m.body %></div>
+      </div>
+    <% }); %>
+  </div>
+
+  <% if (ticket.open) { %>
+    <form action="/appeals/<%= ticket.id %>/reply" method="post">
+      <textarea name="message" required minlength="2" maxlength="4000" rows="4" placeholder="Ваш ответ…" style="width:100%; box-sizing:border-box; background:#1a1a1a; border:1px solid #444; color:#fff; padding:10px; border-radius:3px; margin-bottom:10px;"></textarea>
+      <button type="submit" style="background:#3b9cd9;border:none;color:#fff;padding:8px 16px;border-radius:3px;font-weight:bold;cursor:pointer;">Отправить</button>
+    </form>
+  <% } else if (ticket.show_verdict_footer && ticket.verdict_note) { %>
+    <div style="background:#2a2418; border:1px solid #e6a23c; color:#ffcc80; padding:12px; border-radius:4px; font-size:13px;">
+      Итог: <%= ticket.verdict_note %>
+    </div>
+  <% } %>
+
+  <p style="margin-top:18px;"><a href="/appeals" style="color:#6fdeee;">← Все обжалования</a></p>
+</div>
+</div><div class="clear_both"></div></div></div>
+<div class="blackbox_bl"></div><div class="blackbox_bc"></div><div class="blackbox_br"></div>
+</div></div>
+<div class="clear_both"></div></div>
+<%- include('partials/footer') %>

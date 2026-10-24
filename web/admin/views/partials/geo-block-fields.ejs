@@ -1,0 +1,27 @@
+<%#
+  Geo-block country picker + reason fields.
+  locals:
+    pickerId (string) — unique id for the mount root
+    reasonName (default geo_block_reason)
+    showReasonName (default geo_block_show_reason)
+    reasonValue (optional)
+    showReasonChecked (optional bool)
+    selectedCodes (optional array)
+    hint (optional string)
+%>
+<% const _pid = typeof pickerId !== 'undefined' ? pickerId : 'geoPicker'; %>
+<% const _rName = typeof reasonName !== 'undefined' ? reasonName : 'geo_block_reason'; %>
+<% const _sName = typeof showReasonName !== 'undefined' ? showReasonName : 'geo_block_show_reason'; %>
+<% const _selected = typeof selectedCodes !== 'undefined' && selectedCodes ? selectedCodes : []; %>
+<div class="geo-block-fields">
+  <label style="display:block; margin-bottom:8px; font-weight:bold;">Страны:</label>
+  <div id="<%= _pid %>" class="geo-picker-root" data-selected="<%= _selected.join(',') %>"></div>
+  <p style="font-size:11px; color:#888; margin:8px 0 14px;"><%= typeof hint !== 'undefined' && hint ? hint : 'Начните вводить название — выберите несколько стран из подсказки.' %></p>
+
+  <label style="display:block; margin-bottom:5px; font-weight:bold;">Причина гео-блокировки:</label>
+  <textarea name="<%= _rName %>" class="form-control geo-block-reason-input" rows="3" maxlength="500" style="width:100%; max-width:100%; resize:none; box-sizing:border-box;" placeholder="Обязательно. Попадёт в логи; пользователю — только если отмечена галочка ниже."><%= typeof reasonValue !== 'undefined' && reasonValue ? reasonValue : '' %></textarea>
+  <label style="display:flex; align-items:center; gap:8px; margin-top:10px; font-size:13px; font-weight:normal; cursor:pointer;">
+    <input type="checkbox" name="<%= _sName %>" value="1" <%= typeof showReasonChecked !== 'undefined' && showReasonChecked ? 'checked' : '' %>>
+    Показать причину пользователю (в сообщении от Администрации ЭтоЯTV)
+  </label>
+</div>

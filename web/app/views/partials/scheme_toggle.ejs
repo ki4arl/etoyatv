@@ -1,0 +1,12 @@
+<% if (typeof isModernTheme !== 'undefined' && isModernTheme) {
+  const schemeNow = (typeof colorScheme !== 'undefined' && colorScheme === 'light') ? 'light' : 'dark';
+  const schemeLabel = schemeNow === 'light' ? 'Тёмная тема' : 'Светлая тема';
+%>
+<button type="button" class="scheme-toggle" data-scheme-toggle
+  aria-pressed="<%= schemeNow === 'light' ? 'true' : 'false' %>"
+  aria-label="<%= schemeLabel %>"
+  title="<%= schemeLabel %>">
+  <span class="scheme-toggle__icon scheme-toggle__sun" aria-hidden="true"></span>
+  <span class="scheme-toggle__icon scheme-toggle__moon" aria-hidden="true"></span>
+</button>
+<% } %>

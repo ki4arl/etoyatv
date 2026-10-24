@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Обжалование #<%= ticket.id %> | Панель управления</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <div class="layout-container">
+    <%- include('partials/sidebar', { currentPath: '/appeals' }) %>
+    <main class="main-content">
+      <div class="content-header" style="display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap;">
+        <h1>Обжалование #<%= ticket.id %></h1>
+        <a href="/appeals" style="color:#00c6ff;">← К списку</a>
+      </div>
+
+      <% if (typeof success_msg !== 'undefined' && success_msg) { %><div style="color:#39b54a;margin:10px 0;"><%= success_msg %></div><% } %>
+      <% if (typeof error_msg !== 'undefined' && error_msg) { %><div style="color:#ff4d4d;margin:10px 0;"><%= error_msg %></div><% } %>
+
+      <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:18px; margin-bottom:18px; font-size:14px; line-height:1.5;">
+        <p><strong>Истец:</strong> <a href="/users/<%= ticket.user_id %>/edit" style="color:#00c6ff;"><%= ticket.appellant_name %></a> (ID <%= ticket.user_id %>)</p>
+        <p><strong>Предмет:</strong> <%= ticket.subject_title %> <span style="color:#888;">(<%= ticket.subject_label %>)</span></p>
+        <p><strong>Статус:</strong> <%= ticket.status_label %></p>
+        <p><strong>Кто применил санкцию:</strong> <%= ticket.actor_name || 'не зафиксировано' %></p>
+        <p><strong>Ответчик:</strong> <%= ticket.respondent_name || 'не назначен' %><% if (ticket.iAmRespondent) { %> <span style="color:#e6a23c;">(вы)</span><% } %></p>
+        <% if (isJudge) { %>
+          <% if (ticket.judge_name) { %><p><strong>Судья:</strong> <%= ticket.judge_name %></p><% } %>
+          <% if (ticket.internal_note) { %><p><strong>Внутренняя заметка:</strong> <%= ticket.internal_note %></p><% } %>
+        <% } %>
+        <% if (ticket.facts && ticket.facts.length) { %>
+          <div style="margin-top:12px; padding-top:12px; border-top:1px solid rgba(255,255,255,0.08);">
+            <div style="font-size:12px; color:#9ca3af; margin-bottom:10px; text-transform:uppercase; letter-spacing:0.04em;">Санкция</div>
+            <% ticket.facts.forEach(function(f) { %>
+              <div style="margin-bottom:10px;">
+                <div style="color:#9ca3af; font-size:12px; margin-bottom:2px;"><%= f.label %></div>
+                <% if (f.href) { %>
+                  <a href="<%= (typeof APP_URL !== 'undefined' ? APP_URL.replace(/\/$/, '') : '') + f.href %>" target="_blank" rel="noopener" style="color:#00c6ff; text-decoration:none; font-weight:600;"><%= f.value %></a>
+                <% } else { %>
+                  <div style="color:#e8eef2;"><%= f.value %></div>
+                <% } %>
+              </div>
+            <% }); %>
+          </div>
+        <% } %>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; margin-bottom:20px;">
+        <% messages.forEach(m => { %>
+          <div style="background:rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:14px;">
+            <div style="display:flex; justify-content:space-between; gap:10px; margin-bottom:6px; font-size:12px; color:#9ca3af;">
+              <strong style="color:#e8eef2;"><%= m.display_name %></strong>
+              <span><%= formatDate(m.created_at, userTimezone, 'DD.MM.YYYY HH:mm') %></span>
+            </div>
+            <div style="white-space:pre-wrap; word-break:break-word; font-size:14px;"><%= m.body %></div>
+          </div>
+        <% }); %>
+      </div>
+
+      <% if (ticket.open) { %>
+        <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:18px; margin-bottom:18px;">
+          <h3 style="margin-top:0;">Ответ истцу</h3>
+          <form action="/appeals/<%= ticket.id %>/reply" method="POST">
+            <textarea name="message" required minlength="2" maxlength="4000" rows="4" class="form-control" style="width:100%; box-sizing:border-box; margin-bottom:10px;" placeholder="Текст ответа (истец увидит вас как «Служба модерации» или «Администрация»)"></textarea>
+            <% if (isJudge) { %>
+              <label style="display:flex; align-items:center; gap:8px; margin-bottom:10px; font-size:13px; color:#c5d0d6;">
+                <input type="checkbox" name="as_judge" value="1"> Ответить от имени судьи (Администрация)
+              </label>
+            <% } %>
+            <button type="submit" class="btn-action" style="background:#00c6ff;color:#000;border:none;padding:8px 16px;border-radius:6px;font-weight:700;cursor:pointer;">Отправить ответ</button>
+          </form>
+        </div>
+
+        <% if (isJudge) { %>
+          <div style="background:rgba(255,77,77,0.08); border:1px solid rgba(255,77,77,0.35); border-radius:12px; padding:18px;">
+            <h3 style="margin-top:0; color:#ff8a8a;">Вердикт судьи</h3>
+            <form action="/appeals/<%= ticket.id %>/verdict" method="POST">
+              <div style="margin-bottom:12px;">
+                <label style="display:block; margin-bottom:6px; font-size:13px;">Решение</label>
+                <select name="decision" class="custom-select" required>
+                  <option value="">— выберите —</option>
+                  <option value="overturn">Отменить санкцию</option>
+                  <option value="uphold">Оставить санкцию в силе</option>
+                </select>
+              </div>
+              <div style="margin-bottom:12px;">
+                <label style="display:block; margin-bottom:6px; font-size:13px;">Публичная формулировка (увидит истец)</label>
+                <textarea name="verdict_note" rows="3" class="form-control" style="width:100%; box-sizing:border-box;" maxlength="2000" placeholder="Кратко, без имён сотрудников"></textarea>
+              </div>
+              <div style="margin-bottom:12px;">
+                <label style="display:block; margin-bottom:6px; font-size:13px;">Внутренняя заметка (только админам)</label>
+                <textarea name="internal_note" rows="2" class="form-control" style="width:100%; box-sizing:border-box;" maxlength="2000"></textarea>
+              </div>
+              <button type="submit" class="btn-action btn-danger" onclick="return confirm('Вынести вердикт?');">Вынести вердикт</button>
+            </form>
+          </div>
+        <% } %>
+      <% } else { %>
+        <div style="color:#9ca3af;">Тикет закрыт.<% if (ticket.verdict_note) { %> Итог для истца: <%= ticket.verdict_note %><% } %></div>
+      <% } %>
+    </main>
+  </div>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= pageTitle %></title>
+  <link rel="icon" href="/images/admin_favicon.svg" type="image/svg+xml">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/admin.css">
+  <style>
+    .edit-container {
+      background: #252a2e;
+      border: 1px solid #3a4247;
+      border-radius: 8px;
+      padding: 30px;
+      max-width: 800px;
+    }
+    .edit-header {
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #3a4247;
+    }
+    .form-control {
+      flex: 1;
+      background: #111;
+      border: 1px solid #333;
+      color: #fff;
+      padding: 12px;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    .form-control:focus {
+      border-color: #00c6ff;
+      outline: none;
+    }
+    .static-info {
+      background: #1a1e20;
+      padding: 15px;
+      border-radius: 6px;
+      border: 1px solid #333;
+      margin-bottom: 20px;
+    }
+    .info-row {
+      display: flex;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .info-row:last-child {
+      margin-bottom: 0;
+    }
+    .info-label {
+      width: 150px;
+      color: #8c989e;
+      flex-shrink: 0;
+    }
+    .info-value {
+      color: #fff;
+    }
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #3a4247;
+    }
+    .file-input-wrapper {
+      background: #1a1e20;
+      border: 1px dashed #4a5359;
+      padding: 20px;
+      border-radius: 6px;
+      text-align: center;
+      margin-top: 5px;
+    }
+    .file-input-note {
+      color: #ff4d4d;
+      font-size: 12px;
+      margin-top: 5px;
+      display: block;
+    }
+    
+    @media (max-width: 768px) {
+      .info-row { flex-direction: column; gap: 5px; }
+      .info-label { width: 100%; }
+      .form-group-horiz { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .form-group-horiz label { width: 100%; }
+      .action-buttons { flex-direction: column; gap: 15px; }
+      .action-buttons button, .action-buttons a { width: 100%; text-align: center; }
+      .edit-container { padding: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+  <%- include('partials/header') %>
+
+  <div class="layout-container">
+    <%- include('partials/sidebar', { q: '' }) %>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <div class="edit-container">
+        <div class="edit-header">
+          Редактирование записи (id: <%= record.id %>)
+        </div>
+
+        <form action="/records/<%= record.id %>/edit" method="POST" enctype="multipart/form-data">
+          
+          <div class="form-group-horiz" style="margin-bottom: 20px;">
+            <label style="width: 150px; flex-shrink: 0;">Название</label>
+            <input type="text" name="title" class="form-control" value="<%= record.title %>" required maxlength="100">
+            <div style="font-size: 11px; color: #888; margin-top: 4px;">Максимум 100 символов</div>
+          </div>
+
+          <div class="form-group-horiz align-top" style="margin-bottom: 20px;">
+            <label style="width: 150px; flex-shrink: 0; margin-top: 10px;">Краткое описание</label>
+            <textarea name="description" class="form-control" rows="4" maxlength="200"><%= record.description || '' %></textarea>
+          </div>
+
+          <div class="form-group-horiz" style="margin-bottom: 20px;">
+            <div style="width: 150px; flex-shrink: 0;"></div>
+            <label style="display: flex; align-items: center; cursor: pointer; color: #fff; width: auto; font-weight: normal;">
+              <input type="checkbox" name="is_18_plus" style="margin-right: 10px; transform: scale(1.2);" <%= record.is_18_plus ? 'checked' : '' %>>
+              Метка 18+ (Только для взрослых)
+            </label>
+          </div>
+
+          <div class="static-info">
+            <div class="info-row">
+              <div class="info-label">Канал:</div>
+              <div class="info-value">
+                <% if (record.channel_id) { %>
+                  <a href="/channels/<%= record.channel_id %>/edit" style="color: #00c6ff; text-decoration: none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'"><%= record.channel_name || 'Неизвестно' %></a>
+                <% } else { %>
+                  <span style="color: #00c6ff;"><%= record.channel_name || 'Неизвестно' %></span>
+                <% } %>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Дата создания:</div>
+              <div class="info-value"><%= formatDate(record.created_at, userTimezone, 'DD.MM.YYYY HH:mm:ss') %></div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Статус:</div>
+              <div class="info-value">
+                <% if (record.status === 'banned') { %>
+                  <span style="color: #ff4d4d; font-weight: bold;">Заблокированный (Скрыт)</span>
+                <% } else if (record.status === 'deleted') { %>
+                  <span style="color: #8c989e;">Удаленный</span>
+                <% } else { %>
+                  <span style="color: #4CAF50; font-weight: bold;">Активный</span>
+                <% } %>
+                <% const _geoCodes = parseGeoCountries(record.geo_block_countries); %>
+                <% if (_geoCodes.length) { %>
+                  <div style="margin-top:8px;">
+                    <span style="color:#ff9800; font-weight:bold;">Гео-блок:</span>
+                    <% _geoCodes.forEach(function(code) { %>
+                      <span style="display:inline-flex; align-items:center; gap:6px; margin:4px 8px 0 0; padding:2px 8px; background:rgba(255,152,0,0.15); border:1px solid #ff9800; border-radius:4px; font-size:12px;">
+                        <%= geoCountryLabel(code) %>
+                        <button type="submit" form="recGeoRemove-<%= code %>" class="btn-action" style="padding:0 6px; font-size:11px; line-height:18px; background:#3a4247; border:none; color:#fff;" title="Снять гео-блок для этой страны">Снять</button>
+                      </span>
+                    <% }) %>
+                    <button type="submit" form="recGeoClearAll" class="btn-action" style="padding:2px 8px; font-size:11px; background:#3a4247; border:none; color:#fff; margin-left:6px;">Снять весь гео-блок</button>
+                    <% if (record.geo_block_reason) { %>
+                      <div style="font-size:12px; color:#ccc; margin-top:6px;">
+                        Причина: <%= record.geo_block_reason %>
+                        <% if (record.geo_block_show_reason) { %>
+                          <span style="color:#4CAF50;">(видна пользователю)</span>
+                        <% } else { %>
+                          <span style="color:#888;">(только логи / админ)</span>
+                        <% } %>
+                      </div>
+                    <% } %>
+                  </div>
+                <% } %>
+              </div>
+            </div>
+            <div class="info-row">
+              <div class="info-label">Место на CDN:</div>
+              <div class="info-value">
+                <strong>Размер до сжатии:</strong> <%= (record.size_bytes / (1024 * 1024)).toFixed(2) %> MB<br>
+                <% if (record.processing_status === 'pending') { %>
+                  <span style="color: #ff9800; font-size: 12px; font-weight: bold; margin-top: 5px; display: inline-block;">В обработке...</span>
+                <% } else if (record.processing_status === 'error') { %>
+                  <span style="color: #ff4d4d; font-size: 12px; font-weight: bold; margin-top: 5px; display: inline-block;">Ошибка обработки файла</span>
+                <% } else if (record.hls_url) { %>
+                  <span style="color: #8c989e; font-size: 11px; margin-top: 5px; display: inline-block;">
+                    <% if (sdSize > 0) { %>
+                      HLS (SD Quality): <%= (sdSize / (1024 * 1024)).toFixed(2) %> MB
+                    <% } else { %>
+                      HLS (High Quality): <%= (highSize / (1024 * 1024)).toFixed(2) %> MB<br>
+                      HLS (Low Quality): <%= (lowSize / (1024 * 1024)).toFixed(2) %> MB
+                    <% } %>
+                  </span>
+                <% } %>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group-horiz align-top" style="margin-bottom: 20px;">
+            <label style="width: 150px; flex-shrink: 0; margin-top: 10px;">Заменить видео</label>
+            <div class="file-input-wrapper" style="flex-grow: 1; margin-top: 0;">
+              <input type="file" name="video" accept="video/mp4,video/x-m4v,video/*" style="color: #fff;">
+              <div class="file-input-note">
+                Внимание: при загрузке нового файла старое видео и его HLS-версии будут безвозвратно удалены с сервера, а для нового файла начнется процесс обработки.
+              </div>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <a href="/records" class="btn-action" style="background: #3a4247; border: none; text-decoration: none;">Отменить</a>
+            <button type="submit" class="btn-action" style="background: #00c6ff; color: #000; font-weight: bold; border: none;">Сохранить</button>
+          </div>
+
+        </form>
+
+        <% const _recGeoCodesForForms = parseGeoCountries(record.geo_block_countries); %>
+        <% _recGeoCodesForForms.forEach(function(code) { %>
+        <form id="recGeoRemove-<%= code %>" action="/records/<%= record.id %>/geo_block" method="POST" style="display:none;">
+          <input type="hidden" name="action" value="remove">
+          <input type="hidden" name="country" value="<%= code %>">
+        </form>
+        <% }) %>
+        <% if (_recGeoCodesForForms.length) { %>
+        <form id="recGeoClearAll" action="/records/<%= record.id %>/geo_block" method="POST" style="display:none;">
+          <input type="hidden" name="action" value="clear">
+        </form>
+        <% } %>
+
+        <div style="margin-top: 28px; padding-top: 20px; border-top: 1px solid #333;">
+          <h3 style="color:#fff; font-size:16px; margin:0 0 8px 0;">Гео-блокировка</h3>
+          <p style="font-size:12px; color:#888; margin:0 0 12px;">Поиск по названию страны. Запись останется активной, но зрители из выбранных стран её не увидят. Также действует гео-блок родительского канала.</p>
+          <form id="recordEditGeoForm" action="/records/<%= record.id %>/geo_block" method="POST" onsubmit="return validateRecordEditGeo(this);" style="display:flex; flex-direction:column; gap:12px; max-width:520px;">
+            <input type="hidden" name="action" value="set">
+            <%- include('partials/geo-block-fields', {
+              pickerId: 'recordEditGeoPicker',
+              reasonValue: record.geo_block_reason || '',
+              showReasonChecked: !!record.geo_block_show_reason,
+              selectedCodes: parseGeoCountries(record.geo_block_countries),
+              hint: 'Пустой список = снять гео-блок. Или снимите страны по одной кнопкой «Снять» выше.'
+            }) %>
+            <button type="submit" class="btn-action" style="background:#00c6ff; color:#000; font-weight:bold; border:none; width:200px;">Сохранить гео-блок</button>
+          </form>
+        </div>
+      </div>
+
+    </main>
+  </div>
+  <script src="/js/geoCountryPicker.js"></script>
+  <script>
+    window.GEO_COUNTRY_OPTIONS = <%- JSON.stringify(GEO_COUNTRY_OPTIONS || []) %>;
+    document.addEventListener('DOMContentLoaded', function () {
+      const root = document.getElementById('recordEditGeoPicker');
+      if (root && window.GeoCountryPicker) {
+        const selected = (root.getAttribute('data-selected') || '').split(',').filter(Boolean);
+        GeoCountryPicker.mount(root, {
+          name: 'geo_countries',
+          countries: window.GEO_COUNTRY_OPTIONS || [],
+          selected: selected
+        });
+      }
+    });
+    function validateRecordEditGeo(form) {
+      const hasCountries = form.querySelectorAll('input[name="geo_countries"]').length > 0;
+      if (!hasCountries) return true;
+      const geoReason = form.querySelector('.geo-block-reason-input');
+      if (!geoReason || !String(geoReason.value || '').trim()) {
+        alert('Укажите причину гео-блокировки');
+        return false;
+      }
+      return true;
+    }
+  </script>
+</body>
+</html>

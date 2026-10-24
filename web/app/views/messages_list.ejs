@@ -1,0 +1,116 @@
+<% const isModern = typeof isModernTheme !== 'undefined' && isModernTheme; %>
+<%- include('partials/header') %>
+<div id="content">
+  <div class="left_blocks" style="width: 100%; margin-top: 20px;">
+    <div class="block_item">
+      <div class="blackbox" style="width: auto;">
+        <div class="blackbox_tl"></div><div class="blackbox_tc"></div><div class="blackbox_tr"></div>
+        <div class="blackbox_cw">
+          <div class="blackbox_c">
+            <div class="blackbox_ci">
+              <div class="block-head-bg"></div>
+              <div class="block-head">
+                <div class="block-head-right">
+                  <div class="block-title">Мои сообщения</div>
+                </div>
+              </div>
+              <div class="block-content<%= isModern ? ' pm-inbox' : '' %>"<% if (!isModern) { %> style="background: #2b2b2b; padding: 0;"<% } %>>
+                <div class="pm-compose"<% if (!isModern) { %> style="background: #232323; padding: 15px; border-bottom: 1px solid #111;"<% } %>>
+                  <div class="pm-compose-label"<% if (!isModern) { %> style="font-weight: bold; margin-bottom: 10px; color: #fff;"<% } %>>Написать сообщение пользователю:</div>
+                  <form id="searchForm" class="pm-compose-form"<% if (!isModern) { %> style="margin: 0; position: relative; width: 400px;"<% } %> onsubmit="event.preventDefault(); const v = document.getElementById('userSearchInput').value.trim(); if(v) window.location.href='/messages/' + encodeURIComponent(v);">
+                    <input type="text" id="userSearchInput" class="pm-compose-input"<% if (!isModern) { %> style="width: 100%; background: #1a1a1a; border: 1px solid #111; color: #fff; padding: 6px; box-sizing: border-box;"<% } %> placeholder="Введите ник и нажмите Enter..." autocomplete="off" required>
+                    <div id="userSearchResults" class="pm-compose-results"<% if (!isModern) { %> style="position: absolute; top: 100%; left: 0; width: 100%; background: #2b2b2b; border: 1px solid #555; z-index: 100; display: none; max-height: 200px; overflow-y: auto;"<% } %>></div>
+                  </form>
+                </div>
+                <% if (conversations.length === 0) { %>
+                  <div class="pm-empty"<% if (!isModern) { %> style="padding: 20px; color: #c0c0b2; text-align: center; font-size: 12px;"<% } %>>У вас пока нет диалогов. Начните переписку, зайдя в профиль любого пользователя.</div>
+                <% } else { %>
+                  <ul class="pm-threads"<% if (!isModern) { %> style="list-style: none; padding: 0; margin: 0;"<% } %>>
+                    <% conversations.forEach(function(conv, index) { 
+                      const bgColor = index % 2 === 0 ? '#2b2b2b' : '#222222';
+                      const isNew = conv.receiver_id === currentUserId && conv.is_read === 0;
+                    %>
+                      <li class="pm-thread<%= isNew ? ' pm-thread--unread' : '' %>"<% if (!isModern) { %> style="background: <%= isNew ? '#3a3a3a' : bgColor %>; border-bottom: 1px solid #111; padding: 10px; overflow: hidden;"<% } %>>
+                        <div class="pm-thread-avatar"<% if (!isModern) { %> style="float: left; width: 50px; margin-right: 15px;"<% } %>>
+                          <a href="/account,userinfo/?username=<%= encodeURIComponent(conv.other_username) %>"><img class="pm-avatar" src="<%= CDN_BASE_URL %><%= conv.other_avatar || '/images/default_user_avatar.png' %>"<% if (!isModern) { %> style="width: 50px; height: 50px; border: 1px solid #000;"<% } %> alt=""></a>
+                        </div>
+                        <div class="pm-thread-body"<% if (!isModern) { %> style="float: left; width: 750px;"<% } %>>
+                          <div class="pm-thread-meta"<% if (!isModern) { %> style="margin-bottom: 5px;"<% } %>>
+                            <a href="/account,userinfo/?username=<%= encodeURIComponent(conv.other_username) %>" class="darkblue pm-thread-nick"<% if (!isModern) { %> style="font-weight: bold;"<% } %>><%= conv.other_username %></a><% if (conv.other_username === 'Администрация ЭтоЯTV' || conv.other_username === 'Уведомления ЭтоЯTV') { %><span class="verified_icon blue" title="Официальный аккаунт"></span><% } %>
+                            <span class="pm-thread-date"<% if (!isModern) { %> style="color: #777; font-size: 11px; margin-left: 10px;"<% } %>><%= formatDate(conv.created_at, userTimezone, 'DD.MM.YYYY HH:mm') %></span>
+                            <% if (isNew) { %>
+                              <span class="pm-thread-badge"<% if (!isModern) { %> style="color: #8fdb5a; font-weight: bold; font-size: 11px; margin-left: 10px;"<% } %>><%= isModern ? 'Новое' : '[Новое сообщение]' %></span>
+                            <% } %>
+                          </div>
+                          <div class="pm-thread-preview"<% if (!isModern) { %> style="color: #c0c0b2; font-size: 12px;"<% } %>>
+                            <% if (conv.sender_id === currentUserId) { %>
+                              <span class="pm-thread-you"<% if (!isModern) { %> style="color: #777;"<% } %>>Вы: </span>
+                            <% } %>
+                            <a href="/messages/<%= encodeURIComponent(conv.other_username) %>" class="pm-thread-preview-link"<% if (!isModern) { %> style="color: #c0c0b2; text-decoration: none;"<% } %>>
+                              <%= conv.content.substring(0, 100) %><%= conv.content.length > 100 ? '...' : '' %>
+                            </a>
+                          </div>
+                        </div>
+                        <div class="pm-thread-action"<% if (!isModern) { %> style="float: right; margin-top: 15px;"<% } %>>
+                          <a href="/messages/<%= encodeURIComponent(conv.other_username) %>" class="darkblue pm-thread-open"<% if (!isModern) { %> style="text-decoration: underline; font-size: 11px;"<% } %>>Читать переписку</a>
+                        </div>
+                        <% if (!isModern) { %><div class="clear_both"></div><% } %>
+                      </li>
+                    <% }); %>
+                  </ul>
+                <% } %>
+                <div class="clear_both"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="blackbox_bl"></div><div class="blackbox_bc"></div><div class="blackbox_br"></div>
+      </div>
+    </div>
+  </div>
+  <div class="clear_both"></div>
+</div>
+<script>
+  const searchInput = document.getElementById('userSearchInput');
+  const searchResults = document.getElementById('userSearchResults');
+  const pmModern = document.body.classList.contains('theme_modern');
+
+  searchInput.addEventListener('input', async function() {
+    const q = this.value.trim();
+    if (q.length < 1) {
+      searchResults.style.display = 'none';
+      return;
+    }
+    const res = await fetch('/api/users/search?q=' + encodeURIComponent(q));
+    const users = await res.json();
+    
+    if (users.length === 0) {
+      searchResults.innerHTML = pmModern
+        ? '<div class="pm-compose-empty">Пользователь не найден</div>'
+        : '<div style="padding: 10px; color: #777; font-size: 12px;">Пользователь не найден</div>';
+    } else {
+      const escapeHTML = str => str.replace(/[&<>'"]/g, tag => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag));
+      searchResults.innerHTML = users.map(u => {
+        const avatar = u.avatar ? escapeHTML(u.avatar) : '/images/default_user_avatar.png';
+        const safeUsername = escapeHTML(u.username);
+        if (pmModern) {
+          return `<a href="/messages/${encodeURIComponent(u.username)}" class="pm-compose-hit"><img class="pm-compose-hit-avatar" src="${avatar}" alt=""><span>${safeUsername}</span></a>`;
+        }
+        return `
+          <a href="/messages/${encodeURIComponent(u.username)}" style="display: flex; align-items: center; padding: 5px 10px; text-decoration: none; color: #6fdeee; border-bottom: 1px solid #111;">
+            <img src="${avatar}" style="width: 20px; height: 20px; margin-right: 10px; border: 1px solid #000;">
+            <span style="font-weight: bold; font-size: 12px;">${safeUsername}</span>
+          </a>
+        `;
+      }).join('');
+    }
+    searchResults.style.display = 'block';
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+      searchResults.style.display = 'none';
+    }
+  });
+</script>
+<%- include('partials/footer') %>

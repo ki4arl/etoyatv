@@ -1,0 +1,21 @@
+services:
+  app:
+    build: ./
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    env_file: .env
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - ${MEDIA_STORAGE_PATH:-../samples/media}:/public
+  admin:
+    build: ./admin
+    restart: unless-stopped
+    ports:
+      - "3002:3002"
+    env_file: .env
+    volumes:
+      - ./admin:/app
+      - /app/node_modules
+      - ${MEDIA_STORAGE_PATH:-../samples/media}:/public

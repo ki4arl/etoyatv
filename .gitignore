@@ -1,0 +1,34 @@
+db/mysql_data/
+# Local DB salvage / undelete artifacts (never publish)
+db/_recovery/
+reference/
+__pycache__/
+*.pyc
+
+# Secrets — keep only *.env.example in git (files stay on disk)
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+
+# Runtime email dump / mail logs (PII) — keep on disk, out of git
+web/emails/last_email.txt
+web/emails/*.log
+web/emails/*.eml
+**/last_email.txt
+**/*mail*.log
+
+# Certs / keys / local dumps
+*.pem
+*.key
+!*.example.key
+*.p12
+*.pfx
+credentials.json
+**/secrets/
+**/mysql_data/
+
+
+

@@ -1,0 +1,35 @@
+services:
+  rtmp:
+    image: bluenviron/mediamtx:latest-ffmpeg
+    restart: unless-stopped
+    init: true
+    entrypoint: ["/bin/sh", "/entrypoint.sh"]
+    ports:
+      - "1935:1935"
+      - "8000:8000"
+      - "9997:9997"
+      - "8889:8889"
+      - "8189:8189/udp"
+      - "8189:8189/tcp"
+    volumes:
+      - ./mediamtx.yml:/mediamtx.yml.template:ro
+      - ./entrypoint.sh:/entrypoint.sh:ro
+      - ./on_ready.sh:/on_ready.sh:ro
+      - ${MEDIA_STORAGE_PATH:-../samples/media}:/public
+    environment:
+      WEB_SERVER_IP: ${WEB_SERVER_IP:-127.0.0.1}
+      AUTH_WEB_IP: ${AUTH_WEB_IP:-127.0.0.1}
+      RTMP_API_USER: ${RTMP_API_USER}
+      RTMP_API_PASS: ${RTMP_API_PASS}
+      HLS_CDN_SECRET: ${HLS_CDN_SECRET}
+  worker:
+    build: ./worker
+    restart: unless-stopped
+    init: true
+    environment:
+      DB_HOST: ${DB_HOST:-127.0.0.1}
+      DB_USER: ${DB_USER:-yatv_user}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME:-yatv}
+    volumes:
+      - ${MEDIA_STORAGE_PATH:-../samples/media}:/app/public

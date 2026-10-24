@@ -1,0 +1,137 @@
+<%- include('partials/header') %>
+
+<div id="content" style="flex: 1 0 auto;">
+<div class="left_blocks"> 
+<div class="blackbox" style="width: auto;">
+<div class="blackbox_tl"></div>
+<div class="blackbox_tc"></div>
+<div class="blackbox_tr"></div>
+<div class="blackbox_cw">
+<div class="blackbox_c" style="">
+<div class="blackbox_ci"> 
+<div style="height:400px; width:1px; margin-left:-1px; float:left;"></div>
+<div style="width:100%; float:left;"><div class="block-head-bg"></div>
+<div class="block-head">
+<div class="block-head-right">
+<div class="block-title">Телеканалы <%= searchQuery ? '- Результаты поиска "' + searchQuery + '"' : '' %></div>
+</div> 
+</div>
+<div class="block-head-submenu-bg"></div>
+<div class="block-head-submenu">
+<div class="block-head-submenu-description">
+  <form method="get" action="/tv,channels" class="list-filters">
+    <% if (searchQuery) { %><input type="hidden" name="q" value="<%= searchQuery %>"><% } %>
+    <% const liveQs = liveOnly ? '&live=1' : ''; const qQs = searchQuery ? '&q=' + encodeURIComponent(searchQuery) : ''; %>
+    <div class="list-filters-sort">
+      <a href="/tv,channels<%= (liveQs + qQs).replace(/^&/, '?') %>" data-sort="new" class="<%= sort !== 'popular' && sort !== 'random' ? 'active' : '' %>">Новые</a>
+      <a href="/tv,channels?sort=popular<%= liveQs %><%= qQs %>" data-sort="popular" class="<%= sort === 'popular' ? 'active' : '' %>">Популярные</a>
+      <a href="/tv,channels?sort=random<%= liveQs %><%= qQs %>" data-sort="random" class="<%= sort === 'random' ? 'active' : '' %>">Случайные</a>
+    </div>
+    <label class="list-filters-live">
+      <input type="checkbox" name="live" value="1" <%= liveOnly ? 'checked' : '' %>>
+      <span>В эфире</span>
+    </label>
+  </form>
+</div>
+<a href="#list" onclick="submenuClick(this);changeChannelsView(this, 'list');return false;" class="last  pictogramm pictogramm_active"><span class="list"></span></a>
+<a href="#grid" onclick="submenuClick(this);changeChannelsView(this, 'grid');return false;" class="  pictogramm "><span class="grid"></span></a>
+</div>
+<div class="block-content">
+<div id="channels_list">
+<%- include('partials/channels_list') %>
+</div>
+</div>
+<div class="clear_both"></div></div>
+<div class="clear_both"></div>
+</div><div class="clear_both"></div>
+</div></div>
+<div class="blackbox_bl"></div>
+<div class="blackbox_bc"></div>
+<div class="blackbox_br"></div>
+</div>
+
+</div>
+<!-- << LEFT COLUMN --> 
+<!-- RIGHT COLUMN>> -->
+<div class="right_blocks"> 
+<div class="blocks"> 
+<div class="blackbox" style="width: auto;">
+<div class="blackbox_tl"></div>
+<div class="blackbox_tc"></div>
+<div class="blackbox_tr"></div>
+<div class="blackbox_cw">
+<div class="blackbox_c" style="">
+<div class="blackbox_ci"> 
+<div class="block-head-bg"></div>
+<div class="block-head">
+<div class="block-head-right">
+<div class="block-title">Реклама</div>
+</div> 
+</div>
+<div class="block-content">
+<% if (adsEnabled && adsConfig['sidebar_320x240'] && adsConfig['sidebar_320x240'].image) { %>
+  <div style="width: 320px; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+    <% if (adsConfig['sidebar_320x240'].url) { %>
+      <a href="<%= adsConfig['sidebar_320x240'].url %>" target="_blank" style="display: block;">
+        <img src="<%= adsConfig['sidebar_320x240'].image %>" style="max-width: 100%;">
+      </a>
+    <% } else { %>
+      <img src="<%= adsConfig['sidebar_320x240'].image %>" style="max-width: 100%;">
+    <% } %>
+  </div>
+<% } else if (!adsEnabled) { %>
+  <!-- Ad is disabled -->
+<% } else { %>
+  <div style="width: 320px; height: 240px; background: #333; display: flex; align-items: center; justify-content: center; color: #777; margin: 0 auto;">Место для рекламы</div>
+<% } %>
+<div class="clear_both"></div>
+</div><div class="clear_both"></div>
+</div></div></div>
+<div class="blackbox_bl"></div>
+<div class="blackbox_bc"></div>
+<div class="blackbox_br"></div>
+</div>
+
+</div></div>
+<!-- << RIGHT COLUMN -->
+<div class="clear_both"></div>
+</div>
+
+<script>
+function submenuClick(el) {
+    $('.block-head-submenu .pictogramm').removeClass('pictogramm_active');
+    $(el).addClass('pictogramm_active');
+}
+function changeChannelsView(el, view) {
+    if (view === 'grid') {
+        $('#channels_list > .channels_list').removeClass('channels_list').addClass('channels_grid');
+    } else {
+        $('#channels_list > .channels_grid').removeClass('channels_grid').addClass('channels_list');
+    }
+}
+
+function toggleFavorite(channelId) {
+  fetch(`/api/channels/${channelId}/favorite`, { method: 'POST' })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        const icon = document.getElementById('fan_icon_' + channelId);
+        if (icon) {
+          if (data.isFan) icon.classList.add('active');
+          else icon.classList.remove('active');
+        }
+        const countEl = document.getElementById('fans_count_' + channelId);
+        if (countEl) countEl.innerText = data.count;
+      } else if (data.error === 'Не авторизован') {
+        window.location.href = '/login';
+      }
+    });
+}
+
+</script>
+<script src="<%= CDN_BASE_URL %>/js/list-filters.js?v=<%= ASSET_VERSION %>"></script>
+<script>
+ajaxifyList({ form: '.list-filters', boxId: 'channels_list', preserveView: true });
+</script>
+
+<%- include('partials/footer') %>

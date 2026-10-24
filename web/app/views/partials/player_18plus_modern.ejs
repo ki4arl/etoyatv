@@ -1,0 +1,42 @@
+<%#
+  Возрастной оверлей темы «Эфир».
+  Классика рисует тот же #etoyatv-18plus-overlay инлайном (background:#000).
+  Здесь только классы .pl-age* — цвета из токенов контейнера, не страницы.
+
+  Логика как у классики: ключ localStorage etoyatv_global_18plus,
+  показ до подтверждения, пауза видео. Идентификатор сохранён.
+
+  overlayVideoId: 'etoyatv-video' (эфир) или 'record-video' (запись).
+  overlayAutoShow: сразу показать, если ключа нет (канал, панель, запись).
+%>
+<%
+  const videoId = typeof overlayVideoId !== 'undefined' && overlayVideoId ? overlayVideoId : 'etoyatv-video';
+  const autoShow = typeof overlayAutoShow === 'undefined' ? true : !!overlayAutoShow;
+%>
+<div id="etoyatv-18plus-overlay" class="pl-age" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="pl-age-title">
+  <div class="pl-age__card">
+    <span class="pl-age__badge label_18" aria-hidden="true"></span>
+    <div class="pl-age__title" id="pl-age-title"><%= t('Внимание! Контент 18+') %></div>
+    <p class="pl-age__text"><%= t('Подтвердите, что вам уже исполнилось 18 лет.') %></p>
+    <button type="button" class="pl-age__btn" onclick="confirm18Plus()"><%= t('Мне есть 18 лет') %></button>
+  </div>
+</div>
+<script>
+  function confirm18Plus() {
+    localStorage.setItem('etoyatv_global_18plus', 'true');
+    document.getElementById('etoyatv-18plus-overlay').style.display = 'none';
+    const video = document.getElementById('<%= videoId %>');
+    if (video) video.play().catch(function (e) { console.error('Play error after 18+ confirmation:', e); });
+  }
+  <% if (autoShow) { %>
+  if (localStorage.getItem('etoyatv_global_18plus') !== 'true') {
+    document.getElementById('etoyatv-18plus-overlay').style.display = 'flex';
+  }
+  document.addEventListener('DOMContentLoaded', function () {
+    if (localStorage.getItem('etoyatv_global_18plus') !== 'true') {
+      const video = document.getElementById('<%= videoId %>');
+      if (video) video.pause();
+    }
+  });
+  <% } %>
+</script>

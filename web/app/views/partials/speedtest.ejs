@@ -1,0 +1,443 @@
+<% const isModern = typeof isModernTheme !== 'undefined' && isModernTheme; %>
+<div class="blackbox st-box" id="speedtest-box" style="width: <%= locals.width || 'auto' %>; margin-bottom: 20px;">
+  <div class="blackbox_tl"></div>
+  <div class="blackbox_tc"></div>
+  <div class="blackbox_tr"></div>
+  <div class="blackbox_cw">
+    <div class="blackbox_c">
+      <div class="blackbox_ci">
+        <div class="block-head-bg"></div>
+        <div class="block-head">
+          <div class="block-head-right">
+            <div class="block-title">Тест скорости до сервера</div>
+          </div>
+        </div>
+        <div class="block-content st-body"<% if (!isModern) { %> style="padding: 20px; color: #fff; font-family: Arial, sans-serif;"<% } %>>
+
+          <div class="st-metrics"<% if (!isModern) { %> style="display: flex; justify-content: space-between; gap: 15px; margin-bottom: 20px; flex-wrap: wrap;"<% } %>>
+
+            <!-- Latency (Ping) -->
+            <div class="st-metric st-metric--ping"<% if (!isModern) { %> style="flex: 1; min-width: 140px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 4px; text-align: center; border: 1px solid #111; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);"<% } %>>
+              <div class="st-metric-label"<% if (!isModern) { %> style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 0.5px;"<% } %>>Задержка (Ping)</div>
+              <div id="st_ping_val" class="st-metric-value"<% if (!isModern) { %> style="font-size: 26px; font-weight: bold; color: #6fdeee; text-shadow: 0 0 10px rgba(111,222,238,0.2);"<% } %>>-- <span class="st-unit"<% if (!isModern) { %> style="font-size: 14px; color: #888; font-weight: normal;"<% } %>>мс</span></div>
+            </div>
+
+            <!-- Incoming Speed (Download) -->
+            <div class="st-metric st-metric--down"<% if (!isModern) { %> style="flex: 1; min-width: 140px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 4px; text-align: center; border: 1px solid #111; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);"<% } %>>
+              <div class="st-metric-label"<% if (!isModern) { %> style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 0.5px;"<% } %>>Входящая скорость</div>
+              <span id="st_inbound_val" class="st-metric-value"<% if (!isModern) { %> style="display: block; font-size: 26px; font-weight: bold; color: #39b54a; text-shadow: 0 0 10px rgba(57,181,74,0.2);"<% } %>>-- <span class="st-unit"<% if (!isModern) { %> style="font-size: 14px; color: #888; font-weight: normal;"<% } %>>Мбит/с</span></span>
+            </div>
+
+            <!-- Outgoing Speed (Upload) -->
+            <div class="st-metric st-metric--up"<% if (!isModern) { %> style="flex: 1; min-width: 140px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 4px; text-align: center; border: 1px solid #111; box-shadow: inset 0 0 10px rgba(0,0,0,0.5);"<% } %>>
+              <div class="st-metric-label"<% if (!isModern) { %> style="font-size: 11px; color: #888; text-transform: uppercase; margin-bottom: 8px; font-weight: bold; letter-spacing: 0.5px;"<% } %>>Исходящая скорость</div>
+              <div id="st_outbound_val" class="st-metric-value"<% if (!isModern) { %> style="font-size: 26px; font-weight: bold; color: #ff9900; text-shadow: 0 0 10px rgba(255,153,0,0.2);"<% } %>>-- <span class="st-unit"<% if (!isModern) { %> style="font-size: 14px; color: #888; font-weight: normal;"<% } %>>Мбит/с</span></div>
+            </div>
+
+          </div>
+
+          <!-- Progress Bar wrapper -->
+          <div class="st-progress"<% if (!isModern) { %> style="background: #151515; height: 12px; border-radius: 6px; overflow: hidden; margin-bottom: 20px; border: 1px solid #252525; position: relative;"<% } %>>
+            <div id="st_progress_bar" class="st-progress-fill"<% if (!isModern) { %> style="width: 0%; height: 100%; background: linear-gradient(90deg, #6fdeee, #39b54a, #ff9900); transition: width 0.1s linear;"<% } %>></div>
+          </div>
+
+          <!-- Quality Recommendations Block -->
+          <div id="st_recommendations_box" class="st-recs"<% if (!isModern) { %> style="background: rgba(111, 222, 238, 0.04); border: 1px dashed rgba(111, 222, 238, 0.25); padding: 15px; border-radius: 4px; margin-bottom: 20px; display: none;"<% } %>>
+            <h4 class="st-recs-title"<% if (!isModern) { %> style="margin: 0 0 10px; font-size: 14px; color: #6fdeee; font-weight: bold; text-shadow: 0 0 8px rgba(111,222,238,0.15);"<% } %>>Рекомендации по качеству:</h4>
+            <div class="st-recs-body"<% if (!isModern) { %> style="font-size: 13px; line-height: 1.6; color: #ccc;"<% } %>>
+              <div class="st-recs-row"<% if (!isModern) { %> style="display: flex; align-items: center; margin-bottom: 6px;"<% } %>>
+                <span class="st-recs-ico"<% if (!isModern) { %> style="font-size: 16px; margin-right: 8px;"<% } %>>📺</span>
+                <span class="st-recs-key"<% if (!isModern) { %> style="width: 170px; color: #aaa;"<% } %>>Просмотр эфиров:</span>
+                <strong id="st_rec_watch_val" class="st-recs-val"<% if (!isModern) { %> style="color: #fff; font-size: 13px;"<% } %>>--</strong>
+              </div>
+              <div class="st-recs-row"<% if (!isModern) { %> style="display: flex; align-items: center;"<% } %>>
+                <span class="st-recs-ico"<% if (!isModern) { %> style="font-size: 16px; margin-right: 8px;"<% } %>>🎥</span>
+                <span class="st-recs-key"<% if (!isModern) { %> style="width: 170px; color: #aaa;"<% } %>>Стриминг трансляций:</span>
+                <strong id="st_rec_stream_val" class="st-recs-val"<% if (!isModern) { %> style="color: #fff; font-size: 13px;"<% } %>>--</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Controls -->
+          <div class="st-controls"<% if (!isModern) { %> style="display: flex; flex-direction: column; align-items: center;"<% } %>>
+            <button type="button" id="st_btn_start_test" class="st-start"<% if (!isModern) { %> style="background: #252525; border: 1px solid #444; padding: 8px 30px; color: #fff; font-weight: bold; cursor: pointer; border-radius: 20px; font-size: 14px; min-width: 160px; outline: none; transition: all 0.2s ease-in-out; text-transform: uppercase; letter-spacing: 0.5px;"<% } %>>Начать тест</button>
+            <div id="st_status_text" class="st-status"<% if (!isModern) { %> style="margin-top: 10px; font-size: 12px; color: #888; text-align: center;"<% } %>>Нажмите «Начать тест» — замер до <strong id="st_target_host"></strong> (ваш браузер → этот сервер).</div>
+          </div>
+
+        </div>
+        <div class="clear_both"></div>
+      </div>
+      <div class="clear_both"></div>
+    </div>
+  </div>
+  <div class="blackbox_bl"></div>
+  <div class="blackbox_bc"></div>
+  <div class="blackbox_br"></div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function() {
+    const isModern = document.body.classList.contains('theme_modern');
+    const $box = $('#speedtest-box');
+    const $btnStart = $('#st_btn_start_test');
+    const $status = $('#st_status_text');
+    const $pingVal = $('#st_ping_val');
+    const $downloadVal = $('#st_inbound_val');
+    const $uploadVal = $('#st_outbound_val');
+    const $progress = $('#st_progress_bar');
+    const $recommendations = $('#st_recommendations_box');
+    const $recWatch = $('#st_rec_watch_val');
+    const $recStream = $('#st_rec_stream_val');
+
+    if (!isModern) {
+      $btnStart.hover(
+        function() { if (!$(this).prop('disabled')) { $(this).css({ 'background-color': '#333', 'border-color': '#6fdeee' }); } },
+        function() { if (!$(this).prop('disabled')) { $(this).css({ 'background-color': '#252525', 'border-color': '#444' }); } }
+      );
+    }
+
+    // Dynamic translation helper
+    const t = (str) => window.t ? window.t(str) : str;
+    const speedUnit = t('Мбит/с');
+    const pingUnit = t('мс');
+    const startLabel = $btnStart.text();
+
+    function unitHtml(unit) {
+      return isModern
+        ? '<span class="st-unit">' + unit + '</span>'
+        : '<span style="font-size: 14px; color: #888; font-weight: normal;">' + unit + '</span>';
+    }
+
+    function setMetric($el, value, unit, pop) {
+      $el.html(value + ' ' + unitHtml(unit));
+      if (isModern && pop && $el[0]) {
+        $el.removeClass('is-pop');
+        void $el[0].offsetWidth;
+        $el.addClass('is-pop');
+      }
+    }
+
+    function setBoxState(state, phase) {
+      $box.removeClass('is-running is-done is-error');
+      if (state) $box.addClass('is-' + state);
+      if (phase) $box.attr('data-st-phase', phase);
+      else $box.removeAttr('data-st-phase');
+    }
+
+    function hideRecs() {
+      if (isModern) {
+        $recommendations.removeClass('is-open');
+      } else {
+        $recommendations.slideUp(150);
+      }
+    }
+
+    function showRecs() {
+      if (isModern) {
+        $recommendations.addClass('is-open');
+      } else {
+        $recommendations.slideDown(200);
+      }
+    }
+
+    function setBusy(busy) {
+      $btnStart.prop('disabled', busy);
+      if (isModern) {
+        $btnStart.toggleClass('is-busy', busy);
+        $btnStart.text(busy ? t('Идёт замер…') : startLabel);
+      } else if (busy) {
+        $btnStart.css({ 'opacity': 0.5, 'cursor': 'not-allowed', 'background': '#151515', 'border-color': '#222' });
+      } else {
+        $btnStart.css({ 'opacity': 1, 'cursor': 'pointer', 'background': '#252525', 'border-color': '#444' });
+      }
+    }
+
+    // Accurate client↔server throughput (not TTFB): large chunks, parallel streams, sustained window
+    const TEST_DURATION_MS = 12000;
+    const WARMUP_MS = 1500;
+    const DOWNLOAD_CHUNK = 50 * 1024 * 1024; // 50 MiB
+    const DOWNLOAD_PARALLEL = 6;
+    const UPLOAD_CHUNK = 50 * 1024 * 1024; // 50 MiB
+    const UPLOAD_PARALLEL = 4;
+    const targetHost = window.location.host;
+    $('#st_target_host').text(targetHost);
+
+    $btnStart.on('click', async function() {
+      setBusy(true);
+      hideRecs();
+      $progress.css('width', '0%');
+      setMetric($pingVal, '--', pingUnit);
+      setMetric($downloadVal, '--', speedUnit);
+      setMetric($uploadVal, '--', speedUnit);
+      setBoxState('running', 'ping');
+
+      try {
+        $status.text(t('Проверка задержки до') + ' ' + targetHost + '...');
+        $progress.css('width', '5%');
+        const pingTime = await runPingTest();
+        setMetric($pingVal, pingTime, pingUnit, true);
+
+        setBoxState('running', 'down');
+        $status.text(t('Загрузка (Download) до') + ' ' + targetHost + '...');
+        $progress.css('width', '10%');
+        const downloadSpeed = await runDownloadTest();
+        const displayDownload = (isFinite(downloadSpeed) && !isNaN(downloadSpeed)) ? downloadSpeed : 0;
+        setMetric($downloadVal, displayDownload.toFixed(1), speedUnit, true);
+
+        setBoxState('running', 'up');
+        $status.text(t('Отдача (Upload) на') + ' ' + targetHost + '...');
+        $progress.css('width', '55%');
+        const uploadSpeed = await runUploadTest();
+        const displayUpload = (isFinite(uploadSpeed) && !isNaN(uploadSpeed)) ? uploadSpeed : 0;
+        setMetric($uploadVal, displayUpload.toFixed(1), speedUnit, true);
+
+        $progress.css('width', '100%');
+        $status.text(t('Готово') + ': ' + targetHost + ' — ↓' + displayDownload.toFixed(1) + ' / ↑' + displayUpload.toFixed(1) + ' ' + speedUnit + ', ' + pingTime + ' ' + pingUnit);
+        showRecommendations(displayDownload, displayUpload);
+
+        const testResult = {
+          download: displayDownload.toFixed(1) + ' ' + speedUnit,
+          upload: displayUpload.toFixed(1) + ' ' + speedUnit,
+          ping: pingTime + ' ' + pingUnit,
+          downloadRaw: displayDownload,
+          uploadRaw: displayUpload,
+          pingRaw: pingTime,
+          host: targetHost,
+          timestamp: Date.now()
+        };
+        localStorage.setItem('rtmp_speed_result', JSON.stringify(testResult));
+        window.dispatchEvent(new CustomEvent('rtmpSpeedUpdate', { detail: testResult }));
+
+        setBoxState('done');
+      } catch (err) {
+        console.error('Speed test error:', err);
+        setBoxState('error');
+        if (isModern) {
+          $status.text(t('Ошибка при проведении теста. Попробуйте еще раз.'));
+        } else {
+          $status.html('<span style="color: #ff6666;">' + t('Ошибка при проведении теста. Попробуйте еще раз.') + '</span>');
+        }
+      } finally {
+        setBusy(false);
+      }
+    });
+
+    async function runPingTest() {
+      // discard first (DNS/TLS warm)
+      await fetch('/api/speedtest/download?ping=1&t=' + Date.now(), { cache: 'no-store' });
+      const pings = [];
+      for (let i = 0; i < 5; i++) {
+        const start = performance.now();
+        await fetch('/api/speedtest/download?ping=1&t=' + Date.now(), { cache: 'no-store' });
+        pings.push(performance.now() - start);
+      }
+      pings.sort((a, b) => a - b);
+      // median
+      return Math.round(pings[Math.floor(pings.length / 2)]);
+    }
+
+    async function readResponseBytes(response, onBytes) {
+      if (response.body && typeof response.body.getReader === 'function') {
+        const reader = response.body.getReader();
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          if (value && value.byteLength) onBytes(value.byteLength);
+        }
+        return;
+      }
+      const buf = await response.arrayBuffer();
+      onBytes(buf.byteLength);
+    }
+
+    async function runDownloadTest() {
+      const wallStart = performance.now();
+      let bytesTotal = 0;
+      let bytesAfterWarmup = 0;
+      let warmupAt = 0;
+      let shouldStop = false;
+      const abortControllers = [];
+
+      const timer = setTimeout(() => {
+        shouldStop = true;
+        abortControllers.forEach((c) => c.abort());
+      }, TEST_DURATION_MS);
+
+      function noteBytes(n) {
+        bytesTotal += n;
+        const elapsed = performance.now() - wallStart;
+        if (elapsed >= WARMUP_MS) {
+          if (!warmupAt) {
+            warmupAt = performance.now();
+            bytesAfterWarmup = 0;
+          }
+          bytesAfterWarmup += n;
+        }
+        const measureElapsed = warmupAt ? (performance.now() - warmupAt) / 1000 : elapsed / 1000;
+        const measureBytes = warmupAt ? bytesAfterWarmup : bytesTotal;
+        if (measureElapsed > 0.15) {
+          const mbps = (measureBytes * 8) / (measureElapsed * 1e6);
+          if (isFinite(mbps)) setMetric($downloadVal, mbps.toFixed(1), speedUnit);
+        }
+        const progressPct = 10 + Math.min(40, (elapsed / TEST_DURATION_MS) * 40);
+        $progress.css('width', progressPct + '%');
+      }
+
+      async function downloadWorker() {
+        while (!shouldStop) {
+          const controller = new AbortController();
+          abortControllers.push(controller);
+          try {
+            const response = await fetch(
+              '/api/speedtest/download?size=' + DOWNLOAD_CHUNK + '&t=' + Date.now() + '&r=' + Math.random(),
+              { cache: 'no-store', signal: controller.signal }
+            );
+            if (!response.ok) break;
+            await readResponseBytes(response, noteBytes);
+          } catch (e) {
+            if (e.name !== 'AbortError') console.error('Download error:', e);
+            break;
+          } finally {
+            const idx = abortControllers.indexOf(controller);
+            if (idx >= 0) abortControllers.splice(idx, 1);
+          }
+        }
+      }
+
+      await Promise.all(Array.from({ length: DOWNLOAD_PARALLEL }, () => downloadWorker()));
+      clearTimeout(timer);
+
+      const measureElapsed = warmupAt ? (performance.now() - warmupAt) / 1000 : (performance.now() - wallStart) / 1000;
+      const measureBytes = warmupAt ? bytesAfterWarmup : bytesTotal;
+      if (measureElapsed <= 0.2) return 0;
+      return (measureBytes * 8) / (measureElapsed * 1e6);
+    }
+
+    async function runUploadTest() {
+      const chunkSize = UPLOAD_CHUNK;
+      const dummyData = new Uint8Array(chunkSize);
+      if (window.crypto && window.crypto.getRandomValues) {
+        for (let i = 0; i < chunkSize; i += 65536) {
+          window.crypto.getRandomValues(dummyData.subarray(i, Math.min(i + 65536, chunkSize)));
+        }
+      } else {
+        for (let i = 0; i < chunkSize; i++) dummyData[i] = (i * 31) & 255;
+      }
+
+      const wallStart = performance.now();
+      let bytesTotal = 0;
+      let bytesAfterWarmup = 0;
+      let warmupAt = 0;
+      let shouldStop = false;
+      const activeXhrs = [];
+
+      const timer = setTimeout(() => {
+        shouldStop = true;
+        activeXhrs.forEach((xhr) => xhr.abort());
+      }, TEST_DURATION_MS);
+
+      function noteBytes(n) {
+        bytesTotal += n;
+        const elapsed = performance.now() - wallStart;
+        if (elapsed >= WARMUP_MS) {
+          if (!warmupAt) {
+            warmupAt = performance.now();
+            bytesAfterWarmup = 0;
+          }
+          bytesAfterWarmup += n;
+        }
+        const measureElapsed = warmupAt ? (performance.now() - warmupAt) / 1000 : elapsed / 1000;
+        const measureBytes = warmupAt ? bytesAfterWarmup : bytesTotal;
+        if (measureElapsed > 0.15) {
+          const mbps = (measureBytes * 8) / (measureElapsed * 1e6);
+          if (isFinite(mbps)) setMetric($uploadVal, mbps.toFixed(1), speedUnit);
+        }
+        const progressPct = 55 + Math.min(40, (elapsed / TEST_DURATION_MS) * 40);
+        $progress.css('width', progressPct + '%');
+      }
+
+      function uploadWorker() {
+        return new Promise((resolve) => {
+          function next() {
+            if (shouldStop) return resolve();
+            const xhr = new XMLHttpRequest();
+            activeXhrs.push(xhr);
+            let loadedPrev = 0;
+            xhr.open('POST', '/api/speedtest/upload?t=' + Date.now() + '&r=' + Math.random());
+            xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+            xhr.upload.onprogress = function (e) {
+              if (!e.lengthComputable) return;
+              const diff = e.loaded - loadedPrev;
+              loadedPrev = e.loaded;
+              if (diff > 0) noteBytes(diff);
+            };
+            xhr.onload = xhr.onerror = xhr.onabort = function () {
+              const index = activeXhrs.indexOf(xhr);
+              if (index > -1) activeXhrs.splice(index, 1);
+              if (!shouldStop && xhr.status >= 200 && xhr.status < 300) next();
+              else resolve();
+            };
+            xhr.send(dummyData);
+          }
+          next();
+        });
+      }
+
+      await Promise.all(Array.from({ length: UPLOAD_PARALLEL }, () => uploadWorker()));
+      clearTimeout(timer);
+
+      const measureElapsed = warmupAt ? (performance.now() - warmupAt) / 1000 : (performance.now() - wallStart) / 1000;
+      const measureBytes = warmupAt ? bytesAfterWarmup : bytesTotal;
+      if (measureElapsed <= 0.2) return 0;
+      return (measureBytes * 8) / (measureElapsed * 1e6);
+    }
+
+    function toneWrap(label, tone) {
+      if (isModern) {
+        return '<span class="st-rec-tone st-rec-tone--' + tone + '">' + label + '</span>';
+      }
+      const colors = { accent: '#6fdeee', success: '#39b54a', warning: '#ff9900', danger: '#ff6666' };
+      return '<span style="color: ' + colors[tone] + '; font-weight: bold;">' + label + '</span>';
+    }
+
+    function showRecommendations(downloadSpeed, uploadSpeed) {
+      const t = (str) => window.t ? window.t(str) : str;
+      let watchRec = '';
+      let streamRec = '';
+
+      // Watching recommendations (based on download speed)
+      if (downloadSpeed >= 12.0) {
+        watchRec = toneWrap('1080p 60fps (Full HD)', 'accent') + ' - ' + t('Отличное подключение');
+      } else if (downloadSpeed >= 8.0) {
+        watchRec = toneWrap('1080p 30fps (Full HD)', 'success') + ' - ' + t('Хорошее подключение');
+      } else if (downloadSpeed >= 5.0) {
+        watchRec = toneWrap('720p 60fps (HD)', 'success') + ' - ' + t('Стабильное подключение');
+      } else if (downloadSpeed >= 3.0) {
+        watchRec = toneWrap('720p 30fps (HD)', 'warning') + ' - ' + t('Среднее качество');
+      } else if (downloadSpeed >= 1.5) {
+        watchRec = toneWrap('480p (SD)', 'warning') + ' - ' + t('Низкое разрешение');
+      } else {
+        watchRec = toneWrap('360p / 240p', 'danger') + ' - ' + t('Медленное подключение');
+      }
+
+      // Streaming recommendations (based on upload speed)
+      if (uploadSpeed >= 12.0) {
+        streamRec = toneWrap(t('1080p 60fps (8000 Кбит/с)'), 'accent') + ' - ' + t('Идеально для стриминга');
+      } else if (uploadSpeed >= 8.0) {
+        streamRec = toneWrap(t('1080p 30fps (5000 Кбит/с)'), 'success') + ' - ' + t('Отлично для стриминга');
+      } else if (uploadSpeed >= 6.0) {
+        streamRec = toneWrap(t('720p 60fps (4000 Кбит/с)'), 'success') + ' - ' + t('Хорошо для стриминга');
+      } else if (uploadSpeed >= 4.0) {
+        streamRec = toneWrap(t('720p 30fps (3000 Кбит/с)'), 'warning') + ' - ' + t('Допустимо для стриминга');
+      } else if (uploadSpeed >= 2.5) {
+        streamRec = toneWrap(t('480p (1800 Кбит/с)'), 'warning') + ' - ' + t('Возможны просадки кадров');
+      } else {
+        streamRec = toneWrap(t('Стриминг не рекомендуется'), 'danger') + ' - ' + t('Недостаточная скорость');
+      }
+
+      $recWatch.html(watchRec);
+      $recStream.html(streamRec);
+      showRecs();
+    }
+  });
+</script>

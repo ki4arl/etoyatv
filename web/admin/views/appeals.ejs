@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Обжалования | Панель управления</title>
+  <link rel="stylesheet" href="/css/admin.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <%- include('partials/header') %>
+  <div class="layout-container">
+    <%- include('partials/sidebar', { currentPath: '/appeals' }) %>
+    <main class="main-content">
+      <div class="content-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+        <h1>Обжалования</h1>
+        <div style="display:flex; gap:12px; font-size:13px;">
+          <a href="/appeals?status=open" style="color:<%= statusFilter==='open'?'#00c6ff':'#9ca3af' %>;">Открытые</a>
+          <a href="/appeals?status=mine" style="color:<%= statusFilter==='mine'?'#00c6ff':'#9ca3af' %>;">Мои как ответчик</a>
+          <a href="/appeals?status=resolved" style="color:<%= statusFilter==='resolved'?'#00c6ff':'#9ca3af' %>;">Решённые</a>
+          <a href="/appeals?status=all" style="color:<%= statusFilter==='all'?'#00c6ff':'#9ca3af' %>;">Все</a>
+        </div>
+      </div>
+      <p style="color:#9ca3af; font-size:13px; margin:8px 0 16px;">
+        <% if (isJudge) { %>
+          Вы судья: видите все тикеты, можете отвечать и выносить вердикт. Истец — пользователь, ответчик — модератор, применивший санкцию.
+        <% } else { %>
+          Вы ответчик: видите тикеты, где санкцию применили вы (или ещё не назначен ответчик). Вердикт выносят только администраторы.
+        <% } %>
+      </p>
+      <div class="table-container" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.1);border-radius:12px;overflow:hidden;">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+          <thead>
+            <tr>
+              <th style="padding:12px 15px;text-align:left;color:#9ca3af;">№</th>
+              <th style="padding:12px 15px;text-align:left;color:#9ca3af;">Истец</th>
+              <th style="padding:12px 15px;text-align:left;color:#9ca3af;">Предмет</th>
+              <th style="padding:12px 15px;text-align:left;color:#9ca3af;">Статус</th>
+              <th style="padding:12px 15px;text-align:left;color:#9ca3af;">Кто применил санкцию</th>
+              <th style="padding:12px 15px;text-align:left;color:#9ca3af;">Ответчик</th>
+              <th style="padding:12px 15px;text-align:left;color:#9ca3af;">Обновлён</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% tickets.forEach(t => { %>
+              <tr>
+                <td style="padding:12px 15px;border-top:1px solid rgba(255,255,255,0.05);">
+                  <a href="/appeals/<%= t.id %>" style="color:#00c6ff;">#<%= t.id %></a>
+                  <% if (t.is_mine) { %><span style="color:#e6a23c;font-size:11px;margin-left:4px;">мои</span><% } %>
+                </td>
+                <td style="padding:12px 15px;border-top:1px solid rgba(255,255,255,0.05);"><%= t.appellant_name || '—' %></td>
+                <td style="padding:12px 15px;border-top:1px solid rgba(255,255,255,0.05);"><%= t.subject_title || t.subject_label %></td>
+                <td style="padding:12px 15px;border-top:1px solid rgba(255,255,255,0.05);"><%= t.status_label %></td>
+                <td style="padding:12px 15px;border-top:1px solid rgba(255,255,255,0.05);"><%= t.actor_name || '—' %></td>
+                <td style="padding:12px 15px;border-top:1px solid rgba(255,255,255,0.05);"><%= t.respondent_name || 'не назначен' %></td>
+                <td style="padding:12px 15px;border-top:1px solid rgba(255,255,255,0.05);"><%= formatDate(t.updated_at, userTimezone, 'DD.MM.YYYY HH:mm') %></td>
+              </tr>
+            <% }); %>
+            <% if (!tickets.length) { %>
+              <tr><td colspan="7" style="padding:30px;text-align:center;color:#888;">Тикетов нет</td></tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:16px;color:#9ca3af;font-size:13px;">
+        стр. <%= page %> / <%= totalPages %> (<%= total %>)
+        <% if (page > 1) { %> · <a href="/appeals?status=<%= statusFilter %>&page=<%= page-1 %>" style="color:#00c6ff;">Назад</a><% } %>
+        <% if (page < totalPages) { %> · <a href="/appeals?status=<%= statusFilter %>&page=<%= page+1 %>" style="color:#00c6ff;">Далее</a><% } %>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

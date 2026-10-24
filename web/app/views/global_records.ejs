@@ -1,0 +1,148 @@
+<%- include('partials/header') %>
+
+    <div id="content" style="flex: 1 0 auto;">
+        <!-- LEFT COLUMN>> -->
+        <div class="left_blocks">
+            <div class="block_item">
+                <div class="blackbox" style="width: auto;">
+                    <div class="blackbox_tl"></div>
+                    <div class="blackbox_tc"></div>
+                    <div class="blackbox_tr"></div>
+                    <div class="blackbox_cw">
+                        <div class="blackbox_c" style="">
+                            <div class="blackbox_ci">
+                                <div class="block-head-bg"></div>
+                                <div class="block-head">
+                                    <div class="block-head-right">
+                                        <div class="block-title">Записи <%= searchQuery ? '- по запросу "' + searchQuery
+                                                + '"' : '' %>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="block-head-submenu-bg"></div>
+                                <div class="block-head-submenu">
+                                    <div class="block-head-submenu-description">
+                                        <form method="get" action="/tv,records" class="list-filters">
+                                            <% if (searchQuery) { %><input type="hidden" name="q" value="<%= searchQuery %>"><% } %>
+                                            <% const recQ = searchQuery ? '&q=' + encodeURIComponent(searchQuery) : ''; %>
+                                            <div class="list-filters-sort">
+                                                <a href="/tv,records<%= recQ.replace(/^&/, '?') %>" data-sort="new" class="<%= sort !== 'popular' && sort !== 'random' ? 'active' : '' %>">Новые</a>
+                                                <a href="/tv,records?sort=popular<%= recQ %>" data-sort="popular" class="<%= sort === 'popular' ? 'active' : '' %>">Популярные</a>
+                                                <a href="/tv,records?sort=random<%= recQ %>" data-sort="random" class="<%= sort === 'random' ? 'active' : '' %>">Случайные</a>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <a href="#list" onclick="submenuClick(this);changeRecordsView(this, 'list');return false;" class="last  pictogramm pictogramm_active"><span class="list"></span></a>
+                                    <a href="#grid" onclick="submenuClick(this);changeRecordsView(this, 'grid');return false;" class="  pictogramm "><span class="grid"></span></a>
+                                </div>
+                                <div class="block-content">
+                                    <div id="records_list" class="has-view-toggle">
+                                        <%- include('partials/records_list') %>
+                                    </div>
+                                </div>
+                                <div class="clear_both"></div>
+                            </div>
+                            <div class="clear_both"></div>
+                        </div>
+                        <div class="clear_both"></div>
+                    </div>
+                    <div class="blackbox_bl"></div>
+                    <div class="blackbox_bc"></div>
+                    <div class="blackbox_br"></div>
+                </div>
+
+            </div>
+        </div>
+        <!-- << LEFT COLUMN -->
+        <!-- RIGHT COLUMN>> -->
+        <div class="right_blocks">
+            <div class="blocks">
+                <div class="blackbox" style="width: auto;">
+                    <div class="blackbox_tl"></div>
+                    <div class="blackbox_tc"></div>
+                    <div class="blackbox_tr"></div>
+                    <div class="blackbox_cw">
+                        <div class="blackbox_c" style="">
+                            <div class="blackbox_ci">
+                                <div class="block-head-bg"></div>
+                                <div class="block-head">
+                                    <div class="block-head-right">
+                                        <div class="block-title">Реклама</div>
+                                    </div>
+                                </div>
+                                <div class="block-content">
+                                    <% if (adsEnabled && adsConfig['sidebar_320x240'] && adsConfig['sidebar_320x240'].image) { %>
+                                      <div style="width: 320px; display: flex; align-items: center; justify-content: center; margin: 0 auto;">
+                                        <% if (adsConfig['sidebar_320x240'].url) { %>
+                                          <a href="<%= adsConfig['sidebar_320x240'].url %>" target="_blank" style="display: block;">
+                                            <img src="<%= adsConfig['sidebar_320x240'].image %>" style="max-width: 100%;">
+                                          </a>
+                                        <% } else { %>
+                                          <img src="<%= adsConfig['sidebar_320x240'].image %>" style="max-width: 100%;">
+                                        <% } %>
+                                      </div>
+                                    <% } else if (!adsEnabled) { %>
+                                      <!-- Ad is disabled -->
+                                    <% } else { %>
+                                      <div style="width: 320px; height: 240px; background: #333; display: flex; align-items: center; justify-content: center; color: #777; margin: 0 auto;">Место для рекламы</div>
+                                    <% } %>
+                                    <div class="clear_both"></div>
+                                </div>
+                                <div class="clear_both"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="blackbox_bl"></div>
+                    <div class="blackbox_bc"></div>
+                    <div class="blackbox_br"></div>
+                </div>
+
+            </div>
+        </div>
+        <!-- << RIGHT COLUMN -->
+        <div class="clear_both"></div>
+    </div>
+
+    
+<script>
+window.toggleFavoriteRecord = async function(recordId) {
+  try {
+    const res = await fetch(`/api/records/${recordId}/favorite`, { method: 'POST' });
+    const data = await res.json();
+    if (data.success) {
+      const countEl = document.getElementById('record_fans_count_' + recordId);
+      const iconEl = document.getElementById('record_fan_icon_' + recordId);
+      if (countEl) countEl.innerText = data.count;
+      if (iconEl) {
+        if (data.isFan) {
+          iconEl.classList.add('active');
+        } else {
+          iconEl.classList.remove('active');
+        }
+      }
+    } else {
+      alert(data.error || 'Ошибка');
+    }
+  } catch (e) {
+    alert('Ошибка соединения');
+  }
+};
+</script>
+<script src="<%= CDN_BASE_URL %>/js/list-filters.js?v=<%= ASSET_VERSION %>"></script>
+<script>
+function submenuClick(el) {
+    $('.block-head-submenu .pictogramm').removeClass('pictogramm_active');
+    $(el).addClass('pictogramm_active');
+}
+function changeRecordsView(el, view) {
+    if (view === 'grid') {
+        $('#records_list > .records_list').removeClass('records_list').addClass('records_grid');
+    } else {
+        $('#records_list > .records_grid').removeClass('records_grid').addClass('records_list');
+    }
+}
+ajaxifyList({ form: '.list-filters', boxId: 'records_list', preserveView: true });
+</script>
+
+<%- include('partials/footer') %>
+

@@ -1,0 +1,11 @@
+<%- include('partials/header') %>
+<% const isModern = typeof isModernTheme !== 'undefined' && isModernTheme; %>
+
+<div id="content">
+  <div id="speedtest" class="st-page"<% if (!isModern) { %> style="width: 640px; margin: 40px auto 20px;"<% } %>>
+    <%- include('partials/speedtest', { width: 'auto' }) %>
+  </div>
+  <div class="clear_both"></div>
+</div>
+
+<%- include('partials/footer') %>

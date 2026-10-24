@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 181 50" width="181" height="50">
+  <defs>
+    <linearGradient id="tvGradLight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2aa8bc" />
+      <stop offset="100%" stop-color="#0b7388" />
+    </linearGradient>
+  </defs>
+  <g transform="translate(18, 10)">
+    <line x1="18" y1="4" x2="8" y2="-4" stroke="#0b7388" stroke-width="2" stroke-linecap="round"/>
+    <line x1="18" y1="4" x2="28" y2="-4" stroke="#0b7388" stroke-width="2" stroke-linecap="round"/>
+    <rect x="0" y="4" width="36" height="26" rx="4" fill="none" stroke="url(#tvGradLight)" stroke-width="3"/>
+    <rect x="4" y="8" width="28" height="18" rx="2" fill="url(#tvGradLight)"/>
+    <path d="M 10 22 A 8 8 0 0 1 18 14 A 8 8 0 0 1 26 22" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+    <path d="M 14 22 A 4 4 0 0 1 18 18 A 4 4 0 0 1 22 22" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.9"/>
+    <circle cx="18" cy="22" r="1.5" fill="#ffffff" />
+  </g>
+  <text x="66" y="34" font-family="'Trebuchet MS', 'Arial', sans-serif" font-size="24" font-weight="bold" fill="#1a2330" letter-spacing="1">Eto<tspan fill="#0b7388">Ya</tspan>TV</text>
+</svg>

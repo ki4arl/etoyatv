@@ -1,0 +1,435 @@
+<%
+  const isPremiumOrVerified = locals.panelChannel && (locals.panelChannel.is_premium === 1 || locals.panelChannel.is_verified === 1 || locals.panelChannel.is_premium === true || locals.panelChannel.is_verified === true);
+  const maxMbText = isPremiumOrVerified ? '2 ГБ' : '256 Мб';
+  const maxMbTextUpper = isPremiumOrVerified ? '2 ГБ' : '256 МБ';
+  const maxBytes = isPremiumOrVerified ? 2048 * 1024 * 1024 : 256 * 1024 * 1024;
+%>
+<%- include('../panel_layout', { activeMenu: 'records', activeSubmenu: 'upload', breadcrumbs: '<a href="/panel,dashboard">Панель управления</a> &gt; <a href="/panel,records">Медиа-архив</a> &gt; Загрузить видео', body: `
+
+<div style="background-color: #f7f7f7; background: linear-gradient(to bottom, #fff 0%, #e6e6e6 100%); padding: 10px; border-bottom: 1px solid #ccc; color: #333; margin: -10px -10px 15px -10px; display: flex; align-items: center; border-radius: 4px 4px 0 0;">
+    <div style="flex-grow: 1; font-weight: bold; font-size: 14px;">
+        <a href="/panel,dashboard" style="margin-right: 15px; color: #888;">Панель управления</a>
+        <a href="/panel,records" style="margin-right: 15px; color: #888;">Медиа-архив</a>
+        <span style="color: #333;">Загрузить видео</span>
+    </div>
+    <div>
+        <input type="text" placeholder="Поиск по записям..." style="padding: 5px; border: 1px solid #ccc; width: 200px;">
+        <button class="btn" style="padding: 5px; height: 26px;">&#128269;</button>
+    </div>
+</div>
+
+
+<div style="display: flex; gap: 20px;">
+    <div style="flex-grow: 1;">
+
+        <form action="/panel,records,upload" method="post" enctype="multipart/form-data" style="background-color: #3a4247; padding: 20px; border-radius: 4px; border: 1px solid #1a1e20;">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: #8c989e; font-size: 12px; margin-bottom: 5px;">Название записи:</label>
+                <input type="text" name="title" required maxlength="100" style="width: 100%; padding: 5px; border: 1px solid #1a1e20; background-color: #2b3136; color: #fff; box-sizing: border-box;">
+                <div style="font-size: 10px; color: #8c989e; margin-top: 5px; text-align: right;">Максимум 100 символов.</div>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: #8c989e; font-size: 12px; margin-bottom: 5px;">Описание:</label>
+                <textarea name="description" style="width: 100%; height: 80px; padding: 5px; border: 1px solid #1a1e20; background-color: #2b3136; color: #fff; box-sizing: border-box; font-family: inherit;" maxlength="200"></textarea>
+                <div style="font-size: 10px; color: #8c989e; margin-top: 5px; text-align: right;">Максимальная длина описания 200 символов.</div>
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; color: #8c989e; font-size: 12px; margin-bottom: 5px;">Уровень доступа:</label>
+                <select name="access_level" id="access_level" class="form-control" style="width: 100%; padding: 5px; border: 1px solid #1a1e20; background-color: #2b3136; color: #fff; box-sizing: border-box;">
+                    <option value="public" selected>Публичный (доступен всем и в поиске)</option>
+                    <option value="unlisted">Доступ по ссылке (не в поиске)</option>
+                    <option value="private">Ограниченный доступ (только выбранным)</option>
+                </select>
+            </div>
+            <div id="private-users-section" style="display: none; margin-bottom: 15px;">
+                <label style="display: block; color: #8c989e; font-size: 12px; margin-bottom: 5px;">Разрешенные пользователи:</label>
+                <div id="allowed-users-container" style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px;"></div>
+                <div style="display: flex; gap: 10px; align-items: center; position: relative;">
+                    <input type="text" id="add-user-username" placeholder="Найти пользователя..." class="form-control" style="width: 250px; background-color: #2b3135; color: #fff; border: 1px solid #4a5359; padding: 5px; border-radius: 4px;" autocomplete="off">
+                    <div id="add-user-list" style="display: none; position: absolute; top: 100%; left: 0; width: 250px; background: #fff; border: 1px solid #ccc; border-top: none; max-height: 200px; overflow-y: auto; z-index: 1000; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"></div>
+                    <button type="button" id="add-user-btn" class="btn" style="padding: 5px 12px; height: 32px; font-size: 12px; line-height: normal;">Добавить</button>
+                </div>
+                <div id="add-user-error" style="color: #e06c75; font-size: 11px; margin-top: 5px; display: none;"></div>
+                <input type="hidden" name="allowed_users" id="allowed-users-hidden">
+            </div>
+            <div style="font-size: 12px; color: #8c989e; display: flex; align-items: center; margin-bottom: 15px;">
+                <span style="width: 150px;">Видеофайл:</span>
+                <input type="file" name="record_file" accept="video/*" required style="margin-right: 10px;">
+                <span style="font-size: 11px;">Загружайте любые видео файлы. Максимальный размер файла: ${maxMbText}</span>
+            </div>
+            <div>
+                <button type="submit" class="btn" style="padding: 5px 15px;">Загрузить видео</button>
+            </div>
+        </form>
+
+        <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var form = document.querySelector("form[action^='/panel,records,upload']");
+            if (!form) return;
+
+            var submitBtn = form.querySelector("button[type='submit']");
+            var fileInput = form.querySelector("input[name='record_file']");
+            var titleInput = form.querySelector("input[name='title']");
+            var descInput = form.querySelector("textarea[name='description']");
+            var accessLevelSelect = document.getElementById("access_level");
+            var privateUsersSection = document.getElementById("private-users-section");
+            var allowedUsersContainer = document.getElementById("allowed-users-container");
+            var usernameInput = document.getElementById("add-user-username");
+            var usersList = document.getElementById("add-user-list");
+            var addUserBtn = document.getElementById("add-user-btn");
+            var addUserError = document.getElementById("add-user-error");
+            var allowedUsersHidden = document.getElementById("allowed-users-hidden");
+            var allowedUsers = [];
+            var selectedUser = null;
+            var debounceTimeout;
+
+            function updateAllowedUsersHidden() {
+                var ids = allowedUsers.map(function(u) { return u.user_id; });
+                allowedUsersHidden.value = ids.join(",");
+            }
+
+            function renderAllowedUsers() {
+                allowedUsersContainer.innerHTML = "";
+                if (allowedUsers.length === 0) {
+                    allowedUsersContainer.innerHTML = "<span style='color: #8c989e; font-style: italic; font-size: 11px;'>Список пуст. Добавьте пользователей через поиск.</span>";
+                    return;
+                }
+                allowedUsers.forEach(function(user) {
+                    var chip = document.createElement("div");
+                    chip.style.display = "inline-flex";
+                    chip.style.alignItems = "center";
+                    chip.style.background = "#2b3135";
+                    chip.style.border = "1px solid #4a5359";
+                    chip.style.borderRadius = "4px";
+                    chip.style.padding = "3px 8px";
+                    chip.style.fontSize = "11px";
+                    chip.style.color = "#fff";
+                    var nameSpan = document.createElement("span");
+                    nameSpan.textContent = user.username + " (ID: " + user.user_id + ")";
+                    nameSpan.style.marginRight = "8px";
+                    chip.appendChild(nameSpan);
+                    var removeBtn = document.createElement("span");
+                    removeBtn.innerHTML = "&times;";
+                    removeBtn.style.cursor = "pointer";
+                    removeBtn.style.fontWeight = "bold";
+                    removeBtn.style.color = "#e06c75";
+                    removeBtn.style.fontSize = "14px";
+                    removeBtn.onclick = function() {
+                        allowedUsers = allowedUsers.filter(function(u) { return u.user_id !== user.user_id; });
+                        renderAllowedUsers();
+                        updateAllowedUsersHidden();
+                    };
+                    chip.appendChild(removeBtn);
+                    allowedUsersContainer.appendChild(chip);
+                });
+            }
+
+            accessLevelSelect.addEventListener("change", function() {
+                privateUsersSection.style.display = accessLevelSelect.value === "private" ? "block" : "none";
+            });
+
+            usernameInput.addEventListener("input", function(e) {
+                clearTimeout(debounceTimeout);
+                selectedUser = null;
+                debounceTimeout = setTimeout(async function() {
+                    var q = e.target.value.trim();
+                    if (q.length < 1) {
+                        usersList.style.display = "none";
+                        return;
+                    }
+                    try {
+                        var res = await fetch("/api/users/search?q=" + encodeURIComponent(q));
+                        var data = await res.json();
+                        usersList.innerHTML = "";
+                        if (data.length > 0) {
+                            var escapeHTML = function(str) {
+                                return str.replace(/[&<>'"]/g, function(tag) {
+                                    return {'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'}[tag] || tag;
+                                });
+                            };
+                            data.forEach(function(user) {
+                                var item = document.createElement("div");
+                                item.style.padding = "8px 10px";
+                                item.style.cursor = "pointer";
+                                item.style.borderBottom = "1px solid #eee";
+                                item.style.color = "#333";
+                                item.style.display = "flex";
+                                item.style.alignItems = "center";
+                                var safeAvatar = user.avatar ? escapeHTML(user.avatar) : "/images/default-avatar.png";
+                                var safeUsername = escapeHTML(user.username);
+                                item.innerHTML = '<img src="' + safeAvatar + '" style="width: 20px; height: 20px; border-radius: 50%; margin-right: 10px;"> ' + safeUsername;
+                                item.addEventListener("mouseover", function() { item.style.backgroundColor = "#f0f0f0"; });
+                                item.addEventListener("mouseout", function() { item.style.backgroundColor = "transparent"; });
+                                item.addEventListener("click", function() {
+                                    usernameInput.value = user.username;
+                                    selectedUser = { id: user.id, username: user.username };
+                                    usersList.style.display = "none";
+                                    addUserError.style.display = "none";
+                                });
+                                usersList.appendChild(item);
+                            });
+                            usersList.style.display = "block";
+                        } else {
+                            usersList.style.display = "none";
+                        }
+                    } catch(err) {
+                        usersList.style.display = "none";
+                    }
+                }, 300);
+            });
+
+            document.addEventListener("click", function(e) {
+                if (e.target !== usernameInput && e.target !== usersList && !usersList.contains(e.target)) {
+                    usersList.style.display = "none";
+                }
+            });
+
+            addUserBtn.addEventListener("click", async function() {
+                var inputVal = usernameInput.value.trim();
+                addUserError.style.display = "none";
+                addUserError.textContent = "";
+                if (!inputVal) return;
+
+                var userId = null;
+                var username = null;
+                if (selectedUser && selectedUser.username.toLowerCase() === inputVal.toLowerCase()) {
+                    userId = selectedUser.id;
+                    username = selectedUser.username;
+                }
+                if (!userId) {
+                    var numericId = parseInt(inputVal, 10);
+                    if (!isNaN(numericId) && numericId.toString() === inputVal) {
+                        addUserBtn.disabled = true;
+                        try {
+                            var res = await fetch("/api/users/find_by_id?id=" + numericId);
+                            if (res.ok) {
+                                var data = await res.json();
+                                if (data && data.username) {
+                                    userId = numericId;
+                                    username = data.username;
+                                }
+                            }
+                        } catch(err) {
+                            console.error(err);
+                        } finally {
+                            addUserBtn.disabled = false;
+                        }
+                    } else {
+                        addUserBtn.disabled = true;
+                        try {
+                            var res = await fetch("/api/users/find_by_username?username=" + encodeURIComponent(inputVal));
+                            if (res.ok) {
+                                var data = await res.json();
+                                if (data && data.id) {
+                                    userId = data.id;
+                                    username = data.username;
+                                }
+                            }
+                        } catch(err) {
+                            console.error(err);
+                        } finally {
+                            addUserBtn.disabled = false;
+                        }
+                    }
+                }
+                if (!userId || !username) {
+                    addUserError.textContent = "Пользователь не найден";
+                    addUserError.style.display = "block";
+                    return;
+                }
+                if (allowedUsers.some(function(u) { return u.user_id === userId; })) {
+                    addUserError.textContent = "Пользователь уже добавлен";
+                    addUserError.style.display = "block";
+                    return;
+                }
+                allowedUsers.push({ user_id: userId, username: username });
+                renderAllowedUsers();
+                updateAllowedUsersHidden();
+                usernameInput.value = "";
+                selectedUser = null;
+            });
+
+            renderAllowedUsers();
+            updateAllowedUsersHidden();
+            
+            var progressHTML = 
+                "<div id='uploadProgressContainer' style='display: none; margin-bottom: 15px; background: #2b3136; border-radius: 4px; padding: 12px; border: 1px solid #1a1e20;'>" +
+                "    <div style='display: flex; justify-content: space-between; font-size: 12px; color: #8c989e; margin-bottom: 6px;'>" +
+                "        <span id='uploadStatusText'>Подготовка к загрузке...</span>" +
+                "        <span id='uploadPercentText'>0%</span>" +
+                "    </div>" +
+                "    <div style='background: #1a1e20; border-radius: 4px; height: 8px; overflow: hidden;'>" +
+                "        <div id='uploadProgressBar' style='width: 0%; background: #00a0e3; height: 100%; transition: width 0.1s ease;'></div>" +
+                "    </div>" +
+                "</div>";
+            
+            submitBtn.parentElement.insertAdjacentHTML("beforebegin", progressHTML);
+            
+            var progressContainer = document.getElementById("uploadProgressContainer");
+            var progressBar = document.getElementById("uploadProgressBar");
+            var statusText = document.getElementById("uploadStatusText");
+            var percentText = document.getElementById("uploadPercentText");
+
+            form.addEventListener("submit", function(e) {
+                e.preventDefault();
+
+                if (!titleInput.value || !titleInput.value.trim()) {
+                    if (window.showToast) window.showToast("Укажите название записи.", "error");
+                    else alert("Укажите название записи.");
+                    return;
+                }
+                if (titleInput.value.trim().length > 100) {
+                    if (window.showToast) window.showToast("Название записи не должно превышать 100 символов.", "error");
+                    else alert("Название записи не должно превышать 100 символов.");
+                    return;
+                }
+
+                if (fileInput.files.length > 0) {
+                    var file = fileInput.files[0];
+                    var maxSize = parseInt("${maxBytes}", 10); // ${maxMbTextUpper}
+                    if (file.size > maxSize) {
+                        if (window.showToast) {
+                            window.showToast("Размер видео слишком велик. Максимум ${maxMbTextUpper}.", "error");
+                        } else {
+                            alert("Размер видео слишком велик. Максимум ${maxMbTextUpper}.");
+                        }
+                        return;
+                    }
+                } else {
+                    if (window.showToast) {
+                        window.showToast("Выберите файл для загрузки.", "error");
+                    } else {
+                        alert("Выберите файл для загрузки.");
+                    }
+                    return;
+                }
+
+                var formData = new FormData(form);
+                var xhr = new XMLHttpRequest();
+
+                if (accessLevelSelect.value === "private" && allowedUsers.length === 0) {
+                    if (window.showToast) {
+                        window.showToast("Для ограниченного доступа добавьте хотя бы одного пользователя.", "error");
+                    } else {
+                        alert("Для ограниченного доступа добавьте хотя бы одного пользователя.");
+                    }
+                    return;
+                }
+
+                updateAllowedUsersHidden();
+
+                // Disable inputs
+                submitBtn.disabled = true;
+                submitBtn.textContent = "Загрузка...";
+                fileInput.disabled = true;
+                titleInput.disabled = true;
+                descInput.disabled = true;
+                accessLevelSelect.disabled = true;
+                usernameInput.disabled = true;
+                addUserBtn.disabled = true;
+
+                // Show progress container
+                progressContainer.style.display = "block";
+                progressBar.style.width = "0%";
+                progressBar.style.background = "#00a0e3";
+                percentText.textContent = "0%";
+                statusText.textContent = "Загрузка файла...";
+
+                xhr.upload.addEventListener("progress", function(event) {
+                    if (event.lengthComputable) {
+                        var percent = Math.round((event.loaded / event.total) * 100);
+                        progressBar.style.width = percent + "%";
+                        percentText.textContent = percent + "%";
+                        if (percent === 100) {
+                            statusText.textContent = "Обработка файла сервером...";
+                        } else {
+                            statusText.textContent = "Загрузка файла (" + (event.loaded / 1024 / 1024).toFixed(1) + " МБ из " + (event.total / 1024 / 1024).toFixed(1) + " МБ)...";
+                        }
+                    }
+                });
+
+                xhr.addEventListener("load", function() {
+                    var response;
+                    try {
+                        response = JSON.parse(xhr.responseText);
+                    } catch (err) {
+                        response = { error: xhr.responseText || "Неизвестная ошибка сервера" };
+                    }
+
+                    if (xhr.status >= 200 && xhr.status < 300) {
+                        statusText.textContent = "Успешно загружено!";
+                        progressBar.style.background = "#39b54a";
+                        if (window.showToast) {
+                            window.showToast("Видео успешно загружено и отправлено на обработку!", "success");
+                        }
+                        setTimeout(function() {
+                            window.location.href = response.redirect || "/panel,records";
+                        }, 1000);
+                    } else {
+                        var errMsg = response.error || "Произошла ошибка при загрузке";
+                        if (window.showToast) {
+                            window.showToast(errMsg, "error");
+                        } else {
+                            alert(errMsg);
+                        }
+                        resetForm();
+                    }
+                });
+
+                xhr.addEventListener("error", function() {
+                    if (window.showToast) {
+                        window.showToast("Ошибка сети при загрузке.", "error");
+                    } else {
+                        alert("Ошибка сети при загрузке.");
+                    }
+                    resetForm();
+                });
+
+                xhr.addEventListener("abort", function() {
+                    if (window.showToast) {
+                        window.showToast("Загрузка отменена.", "info");
+                    } else {
+                        alert("Загрузка отменена.");
+                    }
+                    resetForm();
+                });
+
+                function resetForm() {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = "Загрузить видео";
+                    fileInput.disabled = false;
+                    titleInput.disabled = false;
+                    descInput.disabled = false;
+                    accessLevelSelect.disabled = false;
+                    usernameInput.disabled = false;
+                    addUserBtn.disabled = false;
+                    progressContainer.style.display = "none";
+                }
+
+                xhr.open("POST", form.action);
+                xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.send(formData);
+            });
+        });
+        </script>
+    </div>
+    
+    <div style="width: 250px; flex-shrink: 0; display: flex; flex-direction: column; gap: 20px;">
+        <div style="background-color: #3a4247; padding: 15px; border-radius: 4px; border: 1px solid #1a1e20;">
+            <div style="font-size: 14px; color: #fff; font-weight: bold; margin-bottom: 10px; font-style: italic;">Загрузить видео</div>
+            <div style="font-size: 11px; color: #8c989e; line-height: 1.6;">
+                Загружайте видеофайлы любого формата размером до ${maxMbText}. В течение загрузки видеофайла вы можете изменить название, описание и доступ к записи. Не покидайте страницу до завершения загрузки. Вы можете загружать несколько файлов одновременно. После завершения загрузки видеофайл попадает в список записей «В обработке». По завершении обработки запись попадает в список «Загруженные записи».
+            </div>
+        </div>
+        
+        <div style="background-color: #3a4247; padding: 15px; border-radius: 4px; border: 1px solid #1a1e20;">
+            <div style="font-size: 14px; color: #fff; font-weight: bold; margin-bottom: 10px; font-style: italic;">А знаете ли вы?</div>
+            <div style="font-size: 11px; color: #8c989e; line-height: 1.6;">
+                Функция «Связь аккаунтов» позволяет вам автоматически размещать анонсы о трансляциях и записях Вашего телеканала на Facebook и Twitter.
+            </div>
+        </div>
+    </div>
+</div>
+
+` }) %>

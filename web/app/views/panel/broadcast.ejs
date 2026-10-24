@@ -1,0 +1,278 @@
+<%- include('../panel_layout', { activeMenu: 'settings' , activeSubmenu: 'broadcast' ,
+    breadcrumbs: locals.breadcrumbs , body: ` <div
+    style="background-color: #f7f7f7; background: linear-gradient(to bottom, #fff 0%, #e6e6e6 100%); padding: 10px; border-bottom: 1px solid #ccc; color: #333; margin: -10px -10px 15px -10px; display: flex; align-items: center; border-radius: 4px 4px 0 0;">
+    <div style="flex-grow: 1; font-weight: bold; font-size: 14px;">
+        <a href="/panel,dashboard" style="margin-right: 15px; color: #888; text-decoration: none;">Панель управления</a>
+        <span style="margin-right: 15px; color: #888;">Настройки</span>
+        <span style="color: #333;">Трансляция</span>
+    </div>
+    </div>
+
+    <div style="display: flex; gap: 20px;">
+        <div style="flex-grow: 1;">
+            <div
+                style="font-size: 18px; color: #fff; margin-bottom: 20px; border-bottom: 1px solid #4a5359; padding-bottom: 10px;">
+                Настройки трансляции (RTMP)
+            </div>
+
+            ${ (locals.query && locals.query.reset) ? `
+                <div style="background-color: #dff0d8; color: #3c763d; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px;">
+                    Ключ потока успешно сброшен, активный эфир отключён. Обновите ключ в OBS.
+                </div>
+            ` : '' }
+
+            ${ (locals.query && locals.query.killed) ? `
+                <div style="background-color: #dff0d8; color: #3c763d; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px;">
+                    Эфир принудительно отключён.
+                </div>
+            ` : '' }
+
+            ${ (typeof error !== 'undefined' && error) ? `
+                <div style="background-color: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px;">
+                    ${ error }
+                </div>
+            ` : '' }
+
+            ${ (locals.query && locals.query.success) ? `
+                <div style="background-color: #dff0d8; color: #3c763d; padding: 10px; border-radius: 4px; margin-bottom: 15px; font-size: 14px;">
+                    Настройки количества потоков успешно обновлены.
+                </div>
+            ` : '' }
+
+            ${ locals.panelChannel.rtmp_disabled ? `
+                <div style="background-color: #5a1a1a; border: 1px solid #c0392b; color: #ffdddd; padding: 15px; margin-bottom: 20px; border-radius: 4px; font-weight: bold; text-align: center;">
+                    ⚠️ Вещание по RTMP запрещено администрацией платформы
+                </div>
+            ` : `
+                <div style="background: #252b30; padding: 20px; border-radius: 6px; border: 1px solid #373f45;">
+                    <p style="color: #aaa; margin-bottom: 15px; font-size: 14px;">
+                        Используйте эти данные в программе для стриминга (например, OBS, vMix), чтобы начать прямой эфир на вашем канале.
+                        <br><br>
+                        <span style="color: #ff4444;"><strong>Внимание:</strong> Максимально допустимое разрешение — 1080p, битрейт — до 3000 kbps, кодек — H.264 (AVC). При превышении лимитов сервер может прервать вещание.</span>
+                    </p>
+
+                    <!-- Max Streams Config -->
+                    <div class="form-group" style="margin-bottom: 25px; max-width: 800px; border-bottom: 1px solid #373f45; padding-bottom: 20px;">
+                        <label style="color: #8fa0ad; display: block; margin-bottom: 5px;">Количество потоков трансляции (мультистрим):</label>
+                        ${ (locals.panelChannel.is_premium || locals.panelChannel.is_verified || (locals.systemSettings && locals.systemSettings['allow_multistream_for_everyone'] === '1')) ? `
+                            <form action="/panel,settings,broadcast,update_streams" method="POST" style="display: flex; align-items: center; gap: 15px; margin: 0;">
+                                <select name="max_streams" class="form-control" style="width: 180px; background: #1c2125; color: #fff; border: 1px solid #373f45; padding: 8px 12px; border-radius: 3px; outline: none;">
+                                    <option value="1" ${ locals.panelChannel.max_streams === 1 ? 'selected' : '' }>1 камера (по умолч.)</option>
+                                    <option value="2" ${ locals.panelChannel.max_streams === 2 ? 'selected' : '' }>2 камеры</option>
+                                    <option value="3" ${ locals.panelChannel.max_streams === 3 ? 'selected' : '' }>3 камеры</option>
+                                </select>
+                                <button type="submit" class="btn-action panel-compact-action" style="margin-top: 0; padding: 8px 20px; background: #3b9cd9; color: #fff; border: none; border-radius: 3px; cursor: pointer; font-size: 13px; font-weight: bold;">Сохранить</button>
+                            </form>
+                        ` : `
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <select class="form-control" style="width: 180px; background: #1c2125; color: #aaa; border: 1px solid #373f45; padding: 8px 12px; border-radius: 3px;" disabled>
+                                    <option value="1" selected>1 камера</option>
+                                </select>
+                                <span style="color: #ffaa00; font-size: 13px;">⭐ Мультистрим доступен только для Premium и Verified каналов (до 3 камер).</span>
+                            </div>
+                        ` }
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px; max-width: 800px;">
+                        ${ locals.rtmpServerRu ? `
+                        <label style="color: #8fa0ad; display: block; margin-bottom: 5px;">Сервер ingest (регион):</label>
+                        <select id="rtmpRegion" class="form-control" style="width: 100%; max-width: 420px; background: #1c2125; color: #fff; border: 1px solid #373f45; padding: 8px 12px; border-radius: 3px; outline: none; margin-bottom: 8px;">
+                            <option value="ru">Россия (Москва) — kctv.localhost</option>
+                            <option value="eu">Европа — kctv.localhost</option>
+                        </select>
+                        <p style="color: #888; font-size: 12px; margin: 0 0 12px 0;">
+                            Из РФ обычно лучше Москва (прокси на origin). Если нестабильно — выберите Европу (напрямую на origin).
+                        </p>
+                        ` : '' }
+                        <label style="color: #8fa0ad; display: block; margin-bottom: 5px;">URL-адрес сервера:</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="text" class="form-control" style="flex-grow: 1; min-width: 0; background: #1c2125; color: #fff; border: 1px solid #373f45; padding: 8px 12px;" value="${ locals.rtmpServer }" readonly id="serverUrl" data-rtmp-eu="${ locals.rtmpServerEu || '' }" data-rtmp-ru="${ locals.rtmpServerRu || '' }">
+                            <button class="btn-action" style="margin-left: 10px; padding: 8px 20px; margin-top: 0; width: auto !important; flex-shrink: 0; background: #3b9cd9; color: #fff; border: none; border-radius: 3px; cursor: pointer;" onclick="copyToClipboard('serverUrl')">Копировать</button>
+                        </div>
+                    </div>
+
+                    <!-- Stream Keys Section -->
+                    <div class="form-group" style="margin-bottom: 20px; max-width: 800px;">
+                        <label style="color: #8fa0ad; display: block; margin-bottom: 5px;">Ключ потока (Камера 1 / Основная):</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="password" class="form-control" style="flex-grow: 1; min-width: 0; background: #1c2125; color: #fff; border: 1px solid #373f45; padding: 8px 12px;" value="${ (locals.panelChannel.shortname || '').toLowerCase() }?key=${ locals.streamKey }" readonly id="streamKey1">
+                            <button class="btn-action" style="margin-left: 10px; padding: 8px 20px; margin-top: 0; width: auto !important; flex-shrink: 0; background: #4a5359; color: #fff; border: none; border-radius: 3px; cursor: pointer;" onclick="toggleVisibility('streamKey1', this)">Показать</button>
+                            <button class="btn-action" style="margin-left: 10px; padding: 8px 20px; margin-top: 0; width: auto !important; flex-shrink: 0; background: #3b9cd9; color: #fff; border: none; border-radius: 3px; cursor: pointer;" onclick="copyToClipboard('streamKey1')">Копировать</button>
+                        </div>
+                    </div>
+
+                    ${ locals.panelChannel.max_streams >= 2 ? `
+                    <div class="form-group" style="margin-bottom: 20px; max-width: 800px;">
+                        <label style="color: #8fa0ad; display: block; margin-bottom: 5px;">Ключ потока (Камера 2):</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="password" class="form-control" style="flex-grow: 1; min-width: 0; background: #1c2125; color: #fff; border: 1px solid #373f45; padding: 8px 12px;" value="${ (locals.panelChannel.shortname || '').toLowerCase() }_2?key=${ locals.streamKey }" readonly id="streamKey2">
+                            <button class="btn-action" style="margin-left: 10px; padding: 8px 20px; margin-top: 0; width: auto !important; flex-shrink: 0; background: #4a5359; color: #fff; border: none; border-radius: 3px; cursor: pointer;" onclick="toggleVisibility('streamKey2', this)">Показать</button>
+                            <button class="btn-action" style="margin-left: 10px; padding: 8px 20px; margin-top: 0; width: auto !important; flex-shrink: 0; background: #3b9cd9; color: #fff; border: none; border-radius: 3px; cursor: pointer;" onclick="copyToClipboard('streamKey2')">Копировать</button>
+                        </div>
+                    </div>
+                    ` : '' }
+
+                    ${ locals.panelChannel.max_streams >= 3 ? `
+                    <div class="form-group" style="margin-bottom: 20px; max-width: 800px;">
+                        <label style="color: #8fa0ad; display: block; margin-bottom: 5px;">Ключ потока (Камера 3):</label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="password" class="form-control" style="flex-grow: 1; min-width: 0; background: #1c2125; color: #fff; border: 1px solid #373f45; padding: 8px 12px;" value="${ (locals.panelChannel.shortname || '').toLowerCase() }_3?key=${ locals.streamKey }" readonly id="streamKey3">
+                            <button class="btn-action" style="margin-left: 10px; padding: 8px 20px; margin-top: 0; width: auto !important; flex-shrink: 0; background: #4a5359; color: #fff; border: none; border-radius: 3px; cursor: pointer;" onclick="toggleVisibility('streamKey3', this)">Показать</button>
+                            <button class="btn-action" style="margin-left: 10px; padding: 8px 20px; margin-top: 0; width: auto !important; flex-shrink: 0; background: #3b9cd9; color: #fff; border: none; border-radius: 3px; cursor: pointer;" onclick="copyToClipboard('streamKey3')">Копировать</button>
+                        </div>
+                    </div>
+                    ` : '' }
+
+                    <small style="color: #ff6b6b; display: block; margin-top: 8px; margin-bottom: 20px;">Никому не передавайте эти ключи! Это ваши личные ключи для этого канала.</small>
+
+
+                    <hr style="border-top: 1px solid #373f45; margin-bottom: 20px;">
+
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px;">
+                        <span style="color: #aaa; font-size: 13px; max-width: 420px; line-height: 1.45;">Если ключ был скомпрометирован, сбросьте его — текущий эфир будет отключён.</span>
+                        <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                            <form action="/panel,settings,broadcast,reset" method="POST" style="margin: 0;" onsubmit="event.preventDefault(); const form = this; yatvConfirm('Сбросить ваш личный ключ? Текущая трансляция будет прервана, и вам придётся обновить ключ в OBS.', () => { form.submit(); });">
+                                <button type="submit" class="btn-action panel-compact-action" style="margin-top: 0;">Сбросить ключ</button>
+                            </form>
+                            ${ (locals.panelRole === 'owner' || locals.panelRole === 'coowner') ? `
+                            <form action="/panel,settings,broadcast,reset_all" method="POST" style="margin: 0;" onsubmit="event.preventDefault(); const form = this; yatvConfirm('Сбросить ключи у всех участников канала? Текущий эфир будет прерван, всем придётся обновить ключ в OBS. Ключи бывших участников тоже будут отозваны.', () => { form.submit(); });">
+                                <button type="submit" class="btn-action panel-compact-action" style="margin-top: 0; background: #c0392b; border-color: #e74c3c; color: #fff;">Сбросить все ключи</button>
+                            </form>
+                            ` : '' }
+                        </div>
+                    </div>
+                    ${ (locals.panelRole === 'owner' || locals.panelRole === 'coowner') ? `
+                    <small style="color: #888; display: block; margin-top: 10px;">«Сбросить все ключи» обновляет ключи у всей команды и отзывает ключи у бывших участников.</small>
+                    ` : '' }
+
+                    ${ (locals.panelRole === 'owner' || locals.panelRole === 'coowner') ? `
+                    <hr style="border-top: 1px solid #373f45; margin: 20px 0;">
+                    <div style="background: rgba(192,57,43,0.12); border: 1px solid #c0392b; border-radius: 4px; padding: 14px;">
+                        <div style="color: #ffb4b4; font-size: 13px; margin-bottom: 12px; line-height: 1.5;">
+                            Если при скомпрометированном ключе или выгнанном из команды пользователе автоматическое отключение эфира не сработало — можете отрубить эфир сами.
+                        </div>
+                        <form action="/panel,settings,broadcast,kill" method="POST" style="margin: 0;" onsubmit="event.preventDefault(); const form = this; yatvConfirm('Отрубить текущий эфир на этом канале?', () => { form.submit(); });">
+                            <button type="submit" class="btn-action panel-compact-action" style="margin-top: 0; background: #c0392b; border-color: #e74c3c; color: #fff;">Отрубить эфир</button>
+                        </form>
+                    </div>
+                    ` : '' }
+                </div>
+            `}
+
+            ${ (typeof broadcastCrew !== 'undefined' && broadcastCrew) ? `
+            <div style="background: #252b30; border: 1px solid #373f45; border-radius: 6px; padding: 16px 18px; margin-top: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 14px;">
+                    <div style="font-size: 16px; color: #fff; font-weight: bold;">Кто ведёт эфир</div>
+                    ${ broadcastCrew.is_live && broadcastCrew.current_streamer ? `
+                        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(231,76,60,0.15); border: 1px solid #c0392b; color: #ffb4b4; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #e74c3c; box-shadow: 0 0 0 3px rgba(231,76,60,0.25);"></span>
+                            Сейчас в эфире: <strong style="color:#fff;">${escapeHtml(broadcastCrew.current_streamer.username)}</strong>
+                            <span style="color:#aaa;">· ${escapeHtml(broadcastCrew.current_streamer.role_label)}</span>
+                            ${ broadcastCrew.live_started_at_fmt ? `<span style="color:#888;">с ${escapeHtml(broadcastCrew.live_started_at_fmt)}</span>` : '' }
+                        </div>
+                    ` : `
+                        <div style="display: inline-flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.04); border: 1px solid #373f45; color: #aaa; padding: 6px 12px; border-radius: 20px; font-size: 13px;">
+                            <span style="width: 8px; height: 8px; border-radius: 50%; background: #666;"></span>
+                            Сейчас никто не вещает
+                        </div>
+                    ` }
+                </div>
+
+                <div style="display: flex; flex-direction: column; gap: 8px;">
+                    ${ (broadcastCrew.members || []).map(m => `
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: ${m.is_live ? 'rgba(231,76,60,0.08)' : '#1c2125'}; border: 1px solid ${m.is_live ? '#c0392b' : '#373f45'}; border-radius: 4px;">
+                            <img src="${escapeHtml(m.avatar)}" width="32" height="32" style="border-radius: 50%; object-fit: cover; background: #111; flex-shrink: 0;" alt="">
+                            <div style="flex: 1; min-width: 0;">
+                                <a href="/account,userinfo?username=${encodeURIComponent(m.username)}" style="color: #6fdeee; font-weight: bold; font-size: 14px; text-decoration: none;">${escapeHtml(m.username)}</a>
+                                <div style="color: #8c989e; font-size: 12px; margin-top: 2px;">${escapeHtml(m.role_label)}</div>
+                            </div>
+                            ${ m.is_live ? `
+                                <span style="flex-shrink: 0; color: #ff6b6b; font-size: 12px; font-weight: bold; letter-spacing: 0.02em;">● Ведёт эфир</span>
+                            ` : `
+                                <span style="flex-shrink: 0; color: #666; font-size: 12px;">Не ведёт эфир</span>
+                            ` }
+                        </div>
+                    `).join('') }
+                </div>
+
+                <div style="margin-top: 18px; padding-top: 14px; border-top: 1px solid #373f45;">
+                    <div style="font-size: 14px; color: #fff; font-weight: bold; margin-bottom: 8px;">Журнал вещания</div>
+                    <div style="color: #888; font-size: 12px; margin-bottom: 12px;">Кто и когда начинал или останавливал эфир на этом канале.</div>
+                    ${ (typeof broadcastLogs !== 'undefined' && broadcastLogs && broadcastLogs.length) ? `
+                        <div style="max-height: 280px; overflow-y: auto; border: 1px solid #373f45; border-radius: 4px;">
+                            <table style="width: 100%; border-collapse: collapse; font-size: 13px;">
+                                <thead>
+                                    <tr style="background: #1c2125; color: #8c989e; text-align: left;">
+                                        <th style="padding: 8px 12px; font-weight: normal; width: 140px;">Когда</th>
+                                        <th style="padding: 8px 12px; font-weight: normal; width: 140px;">Кто</th>
+                                        <th style="padding: 8px 12px; font-weight: normal;">Что</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${ broadcastLogs.map((log, idx) => `
+                                        <tr style="background: ${idx % 2 ? '#252b30' : '#1f2529'}; border-top: 1px solid #373f45;">
+                                            <td style="padding: 8px 12px; color: #aaa; white-space: nowrap;">${escapeHtml(log.at_fmt)}</td>
+                                            <td style="padding: 8px 12px; color: #6fdeee; font-weight: bold;">${escapeHtml(log.actor)}</td>
+                                            <td style="padding: 8px 12px; color: #ddd;">${escapeHtml(log.action)}</td>
+                                        </tr>
+                                    `).join('') }
+                                </tbody>
+                            </table>
+                        </div>
+                    ` : `
+                        <div style="color: #666; font-size: 13px; padding: 12px; background: #1c2125; border-radius: 4px; border: 1px dashed #373f45;">
+                            Пока нет записей о вещании этого канала.
+                        </div>
+                    ` }
+                </div>
+            </div>
+            ` : '' }
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            var sel = document.getElementById('rtmpRegion');
+            var input = document.getElementById('serverUrl');
+            if (!sel || !input) return;
+            var eu = input.getAttribute('data-rtmp-eu') || input.value;
+            var ru = input.getAttribute('data-rtmp-ru') || eu;
+            var saved = null;
+            try { saved = localStorage.getItem('yatv_rtmp_region'); } catch (e) {}
+            var initial = saved || "${ locals.defaultRtmpRegion || 'eu' }";
+            if (initial !== 'ru' && initial !== 'eu') initial = 'eu';
+            sel.value = initial;
+            input.value = initial === 'ru' ? ru : eu;
+            sel.addEventListener('change', function () {
+                var v = sel.value === 'ru' ? 'ru' : 'eu';
+                input.value = v === 'ru' ? ru : eu;
+                try { localStorage.setItem('yatv_rtmp_region', v); } catch (e2) {}
+            });
+        })();
+
+        function copyToClipboard(elementId) {
+            var copyText = document.getElementById(elementId);
+            if (copyText.type === 'password') {
+                copyText.type = 'text';
+                copyText.select();
+                document.execCommand('copy');
+                copyText.type = 'password';
+            } else {
+                copyText.select();
+                document.execCommand('copy');
+            }
+            alert('Скопировано в буфер обмена');
+        }
+        
+        function toggleVisibility(elementId, btn) {
+            var el = document.getElementById(elementId);
+            if (el.type === 'password') {
+                el.type = 'text';
+                btn.innerText = 'Скрыть';
+            } else {
+                el.type = 'password';
+                btn.innerText = 'Показать';
+            }
+        }
+    </script>
+` }) %>

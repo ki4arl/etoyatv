@@ -1,0 +1,50 @@
+<%- include('partials/header') %>
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+
+<div id="content">
+<div class="left_blocks" style="width: 560px; margin: 40px auto; float: none;">
+<div class="blackbox" style="width: auto;">
+<div class="blackbox_tl"></div><div class="blackbox_tc"></div><div class="blackbox_tr"></div>
+<div class="blackbox_cw"><div class="blackbox_c"><div class="blackbox_ci">
+<div class="block-head-bg"></div>
+<div class="block-head"><div class="block-head-right"><div class="block-title">Обжалование блокировки</div></div></div>
+<div class="block-content" style="padding: 20px;">
+  <p style="color:#aaa; font-size:13px; line-height:1.5; margin-top:0;">
+    Если ваш аккаунт заблокирован, вы можете подать обжалование. Имена сотрудников, применивших санкцию, не раскрываются.
+  </p>
+  <% if (error) { %><div style="color:#ff6666; margin-bottom:12px; font-weight:bold;"><%= error %></div><% } %>
+  <% if (success) { %><div style="color:#6fdeee; margin-bottom:12px; font-weight:bold;"><%= success %></div><% } %>
+  <form action="/appeals/from-ban" method="post">
+    <div class="forms-item">
+      <div class="label">Логин:<span class="blue">*</span></div>
+      <input type="text" name="username" class="input-text" value="<%= username || '' %>" required maxlength="13">
+      <div class="clear_both"></div>
+    </div>
+    <div class="forms-item">
+      <div class="label">Пароль:<span class="blue">*</span></div>
+      <input type="password" name="password" class="input-text" required>
+      <div class="clear_both"></div>
+    </div>
+    <div class="forms-item" style="align-items:flex-start;">
+      <div class="label">Суть обжалования:<span class="blue">*</span></div>
+      <textarea name="message" class="input-text" rows="5" required minlength="10" maxlength="4000" style="width:280px; height:auto; resize:vertical;"></textarea>
+      <div class="clear_both"></div>
+    </div>
+    <div class="forms-item" style="margin-bottom:15px;">
+      <div class="label"></div>
+      <div class="h-captcha" data-sitekey="<%= HCAPTCHA_SITEKEY %>" data-theme="dark"></div>
+      <div class="clear_both"></div>
+    </div>
+    <div class="forms-item">
+      <div class="label"></div>
+      <button type="submit" style="background:#333;border:1px solid #555;padding:6px 16px;color:#fff;font-weight:bold;cursor:pointer;border-radius:3px;">Отправить</button>
+      <a href="/login" style="margin-left:12px;color:#6fdeee;font-size:12px;">Ко входу</a>
+      <div class="clear_both"></div>
+    </div>
+  </form>
+</div>
+</div><div class="clear_both"></div></div></div>
+<div class="blackbox_bl"></div><div class="blackbox_bc"></div><div class="blackbox_br"></div>
+</div></div>
+<div class="clear_both"></div></div>
+<%- include('partials/footer') %>

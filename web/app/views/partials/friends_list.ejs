@@ -1,0 +1,16 @@
+<% if (friends.length === 0) { %>
+  <div class="list-empty" style="color: #c0c0b2; padding: 15px;"><%= emptyMessage %></div>
+<% } else { %>
+  <div id="users_list">
+    <div class="users">
+      <% friends.forEach(function(friendUser, index) { %>
+        <%- include('user_person_card', {
+          person: friendUser,
+          index: index,
+          listLength: friends.length,
+          showHideActions: typeof user !== 'undefined' && user && typeof profileUser !== 'undefined' && profileUser && user.id === profileUser.id
+        }) %>
+      <% }) %>
+    </div>
+  </div>
+<% } %>

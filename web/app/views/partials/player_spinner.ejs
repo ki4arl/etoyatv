@@ -1,0 +1,20 @@
+<% const spinModern = typeof isModernTheme !== 'undefined' && isModernTheme; %>
+<% if (spinModern) { %>
+<div id="etoyatv-spinner" class="pl-spinner" style="display: none;" aria-hidden="true">
+  <span class="pl-spinner__ring"></span>
+</div>
+<% } else { %>
+<div id="etoyatv-spinner" style="display: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; pointer-events: none;">
+  <svg width="24" height="24" viewBox="0 0 24 24" style="animation: etoyatv-spin 1s steps(8, end) infinite;">
+    <circle cx="12" cy="2" r="2.5" fill="rgba(255,255,255,1)" />
+    <circle cx="19.07" cy="4.93" r="2" fill="rgba(255,255,255,0.8)" />
+    <circle cx="22" cy="12" r="1.5" fill="rgba(255,255,255,0.6)" />
+    <circle cx="19.07" cy="19.07" r="1.5" fill="rgba(255,255,255,0.4)" />
+    <circle cx="12" cy="22" r="1.5" fill="rgba(255,255,255,0.2)" />
+    <circle cx="4.93" cy="19.07" r="1.5" fill="rgba(255,255,255,0.1)" />
+    <circle cx="2" cy="12" r="1.5" fill="rgba(255,255,255,0.1)" />
+    <circle cx="4.93" cy="4.93" r="1.5" fill="rgba(255,255,255,0.1)" />
+  </svg>
+</div>
+<style>@keyframes etoyatv-spin { to { transform: rotate(360deg); } }</style>
+<% } %>

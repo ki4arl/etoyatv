@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru" data-scheme="dark">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="https://cdn.localhost/css/css_0.css">
+  <link rel="stylesheet" href="https://cdn.localhost/css/theme_modern.css">
+  <style>
+    body { margin: 0; background: #0b1220; }
+    .right_blocks { width: 320px; margin: 20px; }
+    .blackbox .block-content { padding: 18px; }
+  </style>
+</head>
+<body id="body" class="theme_modern" data-scheme="dark">
+<div class="right_blocks">
+<div class="blocks">
+<div class="blackbox">
+<div class="blackbox_ci">
+<div class="block-content">
+<div class="channelinfoblock">
+<div style="display: flex; gap: 10px;">
+<div class="left" style="width: 100px; flex-shrink: 0;">
+<a class="logo" href="#"><span class="border_logo">
+<img src="https://cdn.localhost/images/design/logo_2_1784841614416.png"
+  style="width: 100px; height: 100px; object-fit: cover; background-color: #000;">
+</span></a>
+</div>
+<div class="right" style="flex-grow: 1;">
+<h1 class="title darkblue" style="font-size: 16px; margin: 0 0 10px 0;">НТВ МИР</h1>
+<div class="info">
+<div class="params">
+<div class="label" style="float: left; width: 80px;">Владелец:</div>
+<div class="value white" style="float: left;">Admin</div>
+<div class="clear_both"></div>
+</div>
+<div class="params">
+<div class="label" style="float: left; width: 80px;">Создан:</div>
+<div class="value white" style="float: left;">07.07.2026</div>
+<div class="clear_both"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="description clear_both" style="margin-top: 15px; padding: 0;">
+<div class="readmore"><div class="teaser">Описание отсутствует.</div></div>
+</div>
+<ul class="usermenu" style="margin-top: 15px; padding-left: 0; list-style: none;">
+<li>Главная страница телеканала</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<pre id="out">measuring…</pre>
+<script>
+function measure() {
+  const block = document.querySelector('.channelinfoblock');
+  const desc = block.querySelector('.description');
+  const title = block.querySelector('h1.title');
+  const left = block.querySelector('.left');
+  const wrap = block.querySelector(':scope > div');
+  const cs = (el) => {
+    if (!el) return null;
+    const s = getComputedStyle(el);
+    const r = el.getBoundingClientRect();
+    return {
+      display: s.display,
+      gridArea: s.gridArea,
+      gridColumn: s.gridColumnStart + ' / ' + s.gridColumnEnd,
+      gridColumnRaw: s.gridColumn,
+      gridRow: s.gridRowStart + ' / ' + s.gridRowEnd,
+      width: s.width,
+      float: s.float,
+      rect: {x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height)}
+    };
+  };
+  const out = {
+    blockDisplay: getComputedStyle(block).display,
+    blockGridTemplate: getComputedStyle(block).gridTemplateColumns,
+    hasDirectLeft: !!block.querySelector(':scope > .left'),
+    wrap: cs(wrap),
+    left: cs(left),
+    right: cs(block.querySelector('.right')),
+    title: cs(title),
+    description: cs(desc),
+    titleUnderCheck: (() => {
+      const t = title.getBoundingClientRect();
+      const d = desc.getBoundingClientRect();
+      return {
+        descStartsAtTitleX: Math.abs(d.x - t.x) < 2,
+        descFullWidthVsBlock: Math.round(d.width) >= Math.round(block.getBoundingClientRect().width) - 4,
+        descYBelowTitle: d.y >= t.bottom - 1
+      };
+    })()
+  };
+  document.getElementById('out').textContent = JSON.stringify(out, null, 2);
+  document.title = 'MEASURED:' + JSON.stringify({
+    gridArea: out.description.gridArea,
+    gridColumn: out.description.gridColumnRaw,
+    width: out.description.width,
+    blockDisplay: out.blockDisplay
+  });
+}
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(() => setTimeout(measure, 50));
+} else {
+  window.addEventListener('load', () => setTimeout(measure, 100));
+}
+setTimeout(measure, 1500);
+</script>
+</body>
+</html>

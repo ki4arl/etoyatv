@@ -1,0 +1,28 @@
+<%#
+  Промо-фоны: night → ueit → day → motion 1–5.
+  Источники в data-* — браузер не качает все webm на старте.
+  Грузит только активный клип (promo-bg.js).
+%>
+<%
+  const promoBgVariants = [
+    { id: 'night',     poster: '/video/promo-night.jpg',     mp4: '/video/promo-night.mp4',     webm: '/video/promo-night.webm' },
+    { id: 'ueit',      poster: '/video/promo-ueit.jpg',      mp4: '/video/promo-ueit.mp4',      webm: '/video/promo-ueit.webm' },
+    { id: 'day',       poster: '/video/promo-day.jpg',       mp4: '/video/promo-day.mp4',       webm: '/video/promo-day.webm' },
+    { id: 'motion-1',  poster: '/video/promo-motion-1.jpg',  mp4: '/video/promo-motion-1.mp4',  webm: '/video/promo-motion-1.webm' },
+    { id: 'motion-2',  poster: '/video/promo-motion-2.jpg',  mp4: '/video/promo-motion-2.mp4',  webm: '/video/promo-motion-2.webm' },
+    { id: 'motion-3',  poster: '/video/promo-motion-3.jpg',  mp4: '/video/promo-motion-3.mp4',  webm: '/video/promo-motion-3.webm' },
+    { id: 'motion-4',  poster: '/video/promo-motion-4.jpg',  mp4: '/video/promo-motion-4.mp4',  webm: '/video/promo-motion-4.webm' },
+    { id: 'motion-5',  poster: '/video/promo-motion-5.jpg',  mp4: '/video/promo-motion-5.mp4',  webm: '/video/promo-motion-5.webm' }
+  ];
+%>
+<div class="promo-bg" data-promo-bg-default="night" aria-hidden="true">
+  <% promoBgVariants.forEach(function (v) { %>
+  <video class="promo-shell__video promo-bg__clip" data-promo-bg="<%= v.id %>"
+    muted loop playsinline preload="none" tabindex="-1"
+    poster="<%= CDN_BASE_URL %><%= v.poster %>"
+    data-webm="<%= CDN_BASE_URL %><%= v.webm %>?v=<%= ASSET_VERSION %>"
+    data-mp4="<%= CDN_BASE_URL %><%= v.mp4 %>?v=<%= ASSET_VERSION %>">
+  </video>
+  <% }); %>
+</div>
+<script src="<%= CDN_BASE_URL %>/js/promo-bg.js?v=<%= ASSET_VERSION %>-lazy2" defer></script>

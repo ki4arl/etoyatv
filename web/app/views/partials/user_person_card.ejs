@@ -1,0 +1,47 @@
+<%
+  const cardUser = person;
+  const isOnline = !!(cardUser.is_online);
+  const total = typeof listLength === 'number' ? listLength : 0;
+  const showActions = typeof showHideActions !== 'undefined' && showHideActions;
+  const statusLabel = (typeof statusText !== 'undefined' && statusText)
+    ? statusText
+    : (isOnline ? 'Сейчас на сайте' : 'Не в сети');
+  const itemEnd = (index % 2 === 1 || (total && index === total - 1)) ? 'item_end' : '';
+%>
+        <div class="item user-card <%= itemEnd %> <%= isOnline ? 'item--online' : 'item--offline' %>"> 
+          <a class="logo" href="/account,userinfo/?username=<%= encodeURIComponent(cardUser.username) %>" style="background: url('<%= CDN_BASE_URL %><%= cardUser.avatar || '/images/default_user_avatar.png' %>') no-repeat center center; background-size: cover;"><span class="border_logo"></span></a>
+          <div class="info"> 
+            <div class="username">
+              <a href="/account,userinfo/?username=<%= encodeURIComponent(cardUser.username) %>" class="<%= isOnline ? 'green' : '' %>">
+                <%= cardUser.username %>
+              </a>
+            </div> 
+            <div class="online">
+              <% if (isOnline) { %>
+                <span class="white user-status user-status--online"><%= statusLabel %></span>
+              <% } else { %>
+                <span class="user-status user-status--offline"><%= statusLabel %></span>
+              <% } %>
+            </div>
+            <div class="channel">
+              <% if (cardUser.telegram || cardUser.discord) { %>
+                <% if (cardUser.telegram) { %>TG: <%= cardUser.telegram %><br><% } %>
+                <% if (cardUser.discord) { %>DC: <%= cardUser.discord %><% } %>
+              <% } else { %>
+                Зритель
+              <% } %>
+            </div>
+            <% if (showActions && typeof user !== 'undefined' && user && typeof profileUser !== 'undefined' && profileUser && user.id === profileUser.id) { %>
+              <div class="user-card-actions" style="margin-top: 5px;">
+                <% if (cardUser.is_hidden_by_owner === 1 || cardUser.is_hidden_by_owner === true) { %>
+                  <a href="#" class="user-card-action user-card-action--show" onclick="event.preventDefault(); friendsPost('/friends/unhide', <%= JSON.stringify(cardUser.username) %>);" style="color: #6fdeee; font-size: 11px; text-decoration: underline;">Показать в списке</a>
+                <% } else { %>
+                  <a href="#" class="user-card-action user-card-action--hide" onclick="event.preventDefault(); friendsPost('/friends/hide', <%= JSON.stringify(cardUser.username) %>);" style="color: #ff6666; font-size: 11px; text-decoration: underline;">Скрыть из списка</a>
+                <% } %>
+              </div>
+            <% } %>
+          </div>
+        </div>
+        <% if (index % 2 === 1 || (total && index === total - 1)) { %>
+          <div class="clear_both" style="height:20px;"></div> 
+        <% } %>

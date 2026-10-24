@@ -1,0 +1,11 @@
+<% if (typeof isModernTheme !== 'undefined' && isModernTheme) { %>
+<script>
+(function(){
+  try {
+    if (<%= (typeof user !== 'undefined' && user) ? 'true' : 'false' %>) return;
+    var s = localStorage.getItem('etoyatv_scheme');
+    if (s === 'light' || s === 'dark') document.documentElement.setAttribute('data-scheme', s);
+  } catch (e) {}
+})();
+</script>
+<% } %>
